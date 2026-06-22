@@ -14,18 +14,39 @@
   --color-gold: #D9A441;
   --color-mute: #8A7B6B;
   --font-serif: "Playfair Display", Georgia, serif;
-  --font-sans: "Inter", system-ui, sans-serif;
+  --font-sans: "Inter Variable", "Inter", system-ui, sans-serif;
+  --font-ar: "Amiri", "Cairo Variable", serif;
+  --font-ar-ui: "Cairo Variable", "Tajawal", sans-serif;
 }
 
-html { scroll-behavior: smooth; }
-body { background: var(--color-cream); color: var(--color-espresso); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  background: var(--color-cream);
+  color: var(--color-espresso);
+  font-family: var(--font-sans);
+  font-size: 16.5px;
+  line-height: 1.65;
+  letter-spacing: -0.005em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+h1,h2,h3,h4 { font-family: var(--font-serif); letter-spacing: -0.02em; line-height: 1.1; }
+p { text-wrap: pretty; }
+h1,h2 { text-wrap: balance; }
+
+/* Latin display helper */
 .font-serif { font-family: var(--font-serif); }
+/* Arabic: elegant naskh for names, comfortable & correctly shaped */
+.font-ar { font-family: var(--font-ar); direction: rtl; font-feature-settings: "calt","liga"; }
+.font-ar-ui { font-family: var(--font-ar-ui); direction: rtl; }
 
 .bg-ambient {
   background-image:
-    radial-gradient(680px 460px at 88% -6%, rgba(217,164,65,.18), transparent 60%),
-    radial-gradient(560px 420px at -6% 8%, rgba(197,107,107,.12), transparent 55%),
-    radial-gradient(620px 520px at 50% 108%, rgba(124,138,87,.12), transparent 60%);
+    radial-gradient(680px 460px at 88% -6%, rgba(217,164,65,.16), transparent 60%),
+    radial-gradient(560px 420px at -6% 8%, rgba(197,107,107,.10), transparent 55%),
+    radial-gradient(620px 520px at 50% 108%, rgba(124,138,87,.10), transparent 60%);
 }
 @keyframes marq { to { transform: translateX(-50%); } }
 .marquee { animation: marq 30s linear infinite; }
@@ -33,6 +54,6 @@ body { background: var(--color-cream); color: var(--color-espresso); font-family
 .spin { animation: spin 4s linear infinite; }
 @keyframes eq { 0%,100%{ height:4px } 50%{ height:16px } }
 .eqbar { animation: eq .9s ease-in-out infinite; }
-.thin-scroll::-webkit-scrollbar { width: 8px; }
+.thin-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
 .thin-scroll::-webkit-scrollbar-thumb { background: var(--color-latte); border-radius: 8px; }
 @media (prefers-reduced-motion: reduce) { .marquee,.spin,.eqbar { animation: none !important; } }
