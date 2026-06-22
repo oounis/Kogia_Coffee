@@ -7,7 +7,8 @@
 <meta name="description" content="Premium traditional coffee powder from Djerba. Six spiced blends — aromatic, spicy, sweet, light, bold. Taste, then take the bag home.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,500;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23E3A85A'/%3E%3Ctext x='16' y='23' font-size='18' text-anchor='middle' fill='%23160F08' font-family='serif'%3E%D9%83%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -15,7 +16,7 @@
 <!-- ===== Header ===== -->
 <header class="site-header">
   <div class="container nav">
-    <a class="brand" href="index.html"><span class="bean">ك</span> Kogia<span class="amber">.</span></a>
+    <a class="brand" href="index.html"><span class="bean">ك</span> Kogia<span class="gold">.</span></a>
     <nav class="nav-links">
       <a href="#blends">Blends</a>
       <a href="#experience">The Shop</a>
@@ -28,38 +29,43 @@
 
 <!-- ===== Hero ===== -->
 <section class="hero">
-  <div class="hero-deco"></div>
   <div class="container hero-grid">
-    <div>
+    <div class="reveal">
       <div class="eyebrow">Djerba · Tunisia</div>
-      <h1>Roasted traditions,<br>ground <span class="amber">fresh</span>.</h1>
+      <h1>Roasted traditions,<br><span class="ital">ground fresh.</span></h1>
       <p>Six authentic spiced coffee blends — sold as powder, by the bag. Taste them at our corner, then take your favourite home.</p>
       <div class="hero-cta">
         <a href="#blends" class="btn btn-primary">Shop the blends</a>
         <a href="#experience" class="btn btn-ghost">Visit the shop →</a>
       </div>
+      <div class="hero-stats">
+        <div class="s"><b>6</b><span>blends</span></div>
+        <div class="s"><b>100%</b><span>listed grams</span></div>
+        <div class="s"><b>15 DT</b><span>from / bag</span></div>
+      </div>
     </div>
-    <div class="hero-art">
-      <div class="hero-badge">
-        <div><b>6 blends</b><br><span class="muted" style="font-size:.8rem">light → bold</span></div>
-        <div style="text-align:right"><b>From 15 DT</b><br><span class="muted" style="font-size:.8rem">250 g bag</span></div>
+    <div class="hero-art reveal" id="heroArt">
+      <div class="hero-float">
+        <div><b>Djerbi Signature</b><br><span class="muted" style="font-size:.8rem">aromatic · house blend</span></div>
+        <div style="text-align:right"><b class="gold">★</b><br><span class="muted" style="font-size:.8rem">bestseller</span></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ===== Trust strip ===== -->
-<div class="strip"><div class="container strip-inner">
-  <span>🔥 Roasted &amp; ground in Djerba</span>
-  <span>🧾 Every gram listed — full transparency</span>
-  <span>☕ Insert a coin, taste a tradition</span>
-  <span>🚚 Shipped across Tunisia</span>
-</div></div>
+<!-- ===== Marquee ===== -->
+<div class="strip">
+  <div class="marquee" id="marquee">
+    <span><i>🔥</i> Roasted &amp; ground in Djerba</span><span><i>🧾</i> Every gram listed</span>
+    <span><i>🪙</i> Insert a coin, taste a tradition</span><span><i>🚚</i> Shipped across Tunisia</span>
+    <span><i>🌿</i> No sugar, no secrets</span><span><i>☕</i> Six distinct profiles</span>
+  </div>
+</div>
 
 <!-- ===== Blends ===== -->
 <section class="section" id="blends">
   <div class="container">
-    <div class="section-head">
+    <div class="section-head reveal">
       <div class="eyebrow">The Menu</div>
       <h2>Find your blend</h2>
       <p>From light &amp; floral to bold &amp; zesty. Pick a size — each bag shows its taste profile, just like on the shelf.</p>
@@ -69,33 +75,31 @@
 </section>
 
 <!-- ===== Experience ===== -->
-<section class="section experience" id="experience">
+<section class="section" id="experience">
   <div class="container">
-    <div class="section-head">
+    <div class="section-head reveal">
       <div class="eyebrow">The Shop</div>
       <h2>Taste before you take it home</h2>
       <p>Our little shop in Djerba is built around one idea: let people taste, then take the bag.</p>
     </div>
     <div class="exp-grid">
-      <div class="exp-card"><div class="ic">🪙</div><h3>The coin machine</h3><p>Insert a coin, get a fresh cup of a rotating house blend. The easiest way to try a tradition.</p></div>
-      <div class="exp-card"><div class="ic">🫖</div><h3>The tasting corner</h3><p>Sit at the zellige bar, tell us how you like your coffee, and we'll pour the blend that fits you.</p></div>
-      <div class="exp-card"><div class="ic">🛍️</div><h3>Take the bag</h3><p>Loved it? The matching bag is right there — 250 g, 500 g or 1 kg, sealed fresh.</p></div>
+      <div class="exp-card reveal"><div class="ic">🪙</div><div class="exp-num">01</div><h3>The coin machine</h3><p>Insert a coin, get a fresh cup of a rotating house blend. The easiest way to try a tradition.</p></div>
+      <div class="exp-card reveal"><div class="ic">🫖</div><div class="exp-num">02</div><h3>The tasting corner</h3><p>Sit at the zellige bar, tell us how you like your coffee, and we'll pour the blend that fits you.</p></div>
+      <div class="exp-card reveal"><div class="ic">🛍️</div><div class="exp-num">03</div><h3>Take the bag</h3><p>Loved it? The matching bag is right there — 250 g, 500 g or 1 kg, sealed fresh.</p></div>
     </div>
   </div>
 </section>
 
 <!-- ===== Promise ===== -->
 <section class="section" id="story">
-  <div class="container hero-grid" style="align-items:center">
-    <div>
+  <div class="container split">
+    <div class="reveal">
       <div class="eyebrow">Our Promise</div>
-      <h2 style="font-size:clamp(1.9rem,3.5vw,2.8rem);margin:.4rem 0 1rem">No secrets. Just grams.</h2>
+      <h2 style="font-size:clamp(2rem,4vw,3rem);margin:.5rem 0 1rem">No secrets.<br>Just grams.</h2>
       <p class="muted">We don't sell mystique — we sell craft. Every blend lists exactly what's inside, down to the grams of cardamom and barley. Premium beans, roasted with discipline (barley well-roasted, never burnt), then ground fresh and sealed with a one-way valve to lock the aroma.</p>
-      <div class="hero-cta">
-        <a href="#blends" class="btn btn-dark">Browse blends</a>
-      </div>
+      <div class="hero-cta"><a href="#blends" class="btn btn-primary">Browse blends</a></div>
     </div>
-    <div class="hero-art" style="aspect-ratio:4/3;background-image:linear-gradient(160deg,rgba(59,36,21,.06),rgba(122,132,80,.18)),url('../../assets/images/product_3.jpg')"></div>
+    <div class="art-panel reveal" id="storyArt"></div>
   </div>
 </section>
 
@@ -105,14 +109,14 @@
     <div class="foot-grid">
       <div style="max-width:280px">
         <h4>Kogia Coffee</h4>
-        <p style="color:rgba(244,236,224,.7);font-size:.9rem">Premium traditional coffee powder, roasted &amp; ground in Djerba, Tunisia.</p>
+        <p class="muted" style="font-size:.9rem">Premium traditional coffee powder, roasted &amp; ground in Djerba, Tunisia.</p>
       </div>
       <div><h4>Shop</h4><a href="#blends">All blends</a><a href="#blends">Gift box</a><a href="#experience">Visit us</a></div>
       <div><h4>Company</h4><a href="#story">Our promise</a><a href="dashboard.html">Owner dashboard</a></div>
       <div><h4>Contact</h4><a href="#">Djerba, Tunisia</a><a href="#">@kogiacoffee</a></div>
     </div>
     <div class="foot-bottom">
-      <span>© 2026 Kogia Coffee. All rights reserved.</span>
+      <span>© 2026 Kogia Coffee — testing build, work in progress.</span>
       <span>Roasted traditions, ground fresh.</span>
     </div>
   </div>
@@ -129,9 +133,17 @@
   </div>
 </aside>
 
+<!-- ===== Music player ===== -->
+<div class="player" id="player" title="Play café ambiance">
+  <div class="disc">♪</div>
+  <div class="ptxt"><b>Play ambiance</b><span>oud · café mood</span></div>
+  <div class="eq"><i></i><i></i><i></i><i></i></div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="data.js"></script>
+<script src="music.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
