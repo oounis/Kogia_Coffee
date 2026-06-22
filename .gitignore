@@ -17,3 +17,7 @@ __pycache__/
 
 # Node (if added later)
 node_modules/
+
+# website build tooling
+09_Technology_Website/app/node_modules/
+09_Technology_Website/app/dist/

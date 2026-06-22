@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cream: #FBF6EF;
+  --color-sand: #F3E9DA;
+  --color-latte: #EADBC6;
+  --color-foam: #FFFFFF;
+  --color-espresso: #2C2018;
+  --color-coffee: #6F4E37;
+  --color-caramel: #C0743C;
+  --color-caramel-dark: #A85F2C;
+  --color-sage: #7C8A57;
+  --color-clay: #C56B6B;
+  --color-gold: #D9A441;
+  --color-mute: #8A7B6B;
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+body { background: var(--color-cream); color: var(--color-espresso); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+.font-serif { font-family: var(--font-serif); }
+
+.bg-ambient {
+  background-image:
+    radial-gradient(680px 460px at 88% -6%, rgba(217,164,65,.18), transparent 60%),
+    radial-gradient(560px 420px at -6% 8%, rgba(197,107,107,.12), transparent 55%),
+    radial-gradient(620px 520px at 50% 108%, rgba(124,138,87,.12), transparent 60%);
+}
+@keyframes marq { to { transform: translateX(-50%); } }
+.marquee { animation: marq 30s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { animation: spin 4s linear infinite; }
+@keyframes eq { 0%,100%{ height:4px } 50%{ height:16px } }
+.eqbar { animation: eq .9s ease-in-out infinite; }
+.thin-scroll::-webkit-scrollbar { width: 8px; }
+.thin-scroll::-webkit-scrollbar-thumb { background: var(--color-latte); border-radius: 8px; }
+@media (prefers-reduced-motion: reduce) { .marquee,.spin,.eqbar { animation: none !important; } }
