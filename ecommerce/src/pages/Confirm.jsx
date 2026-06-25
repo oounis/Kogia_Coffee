@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { CheckCircle2, Wallet, MapPin, CalendarCheck } from 'lucide-react'
 import { loadOrders } from '../store.js'
 import { CUR, PRODUCTS } from '../data.js'
-import { BlendMark } from '../marks.jsx'
+import { ProductImg } from '../marks.jsx'
 export default function Confirm(){
   const {id}=useParams(); const nav=useNavigate(); const o=loadOrders().find(x=>x.id===id)
   if(!o) return <div className="min-h-screen grid place-items-center text-muted">Commande introuvable.</div>
@@ -16,7 +16,7 @@ export default function Confirm(){
       <div className="text-sm text-muted ml-6">{o.customer.address}, {o.customer.city}, {o.customer.gov}</div>
       {o.eta&&<div className="text-sm text-muted mt-2 flex items-center gap-2"><CalendarCheck size={15}/> Livraison estimée : <b className="text-ink">{o.eta}</b></div>}
     </div>
-    <div className="mt-4 text-left text-sm space-y-2">{o.items.map(i=>{const p=PRODUCTS.find(x=>x.id===i.id);return(<div key={i.key} className="flex items-center gap-2"><BlendMark p={p} size={28}/><span className="flex-1 text-muted">{i.name} ×{i.qty} ({i.size})</span><span>{i.price*i.qty} {CUR}</span></div>)})}
+    <div className="mt-4 text-left text-sm space-y-2">{o.items.map(i=>{const p=PRODUCTS.find(x=>x.id===i.id);return(<div key={i.key} className="flex items-center gap-2"><ProductImg p={p} size={30} radius={9}/><span className="flex-1 text-muted">{i.name} ×{i.qty} ({i.size})</span><span>{i.price*i.qty} {CUR}</span></div>)})}
       <div className="flex justify-between text-muted pt-1 border-t border-line/60"><span>Livraison</span><span>{o.deliveryFee===0?'Gratuite':o.deliveryFee+' '+CUR}</span></div></div>
     <button onClick={()=>nav('/')} className="w-full rounded-full py-3 mt-6 font-semibold text-white" style={{background:'#B5673A'}}>Retour à la boutique</button>
   </div></div>)

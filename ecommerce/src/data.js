@@ -1,4 +1,5 @@
 export const CUR="DT"
+const A=import.meta.env.BASE_URL
 export const DELIVERY={fee:7,freeOver:60}
 export const GOUVERNORATS=["Ariana","Béja","Ben Arous","Bizerte","Gabès","Gafsa","Jendouba","Kairouan","Kasserine","Kébili","Le Kef","Mahdia","Manouba","Médenine","Monastir","Nabeul","Sfax","Sidi Bouzid","Siliana","Sousse","Tataouine","Tozeur","Tunis","Zaghouan"]
 export const CITIES={
@@ -36,4 +37,5 @@ export const PRODUCTS=[
   {id:"dunes",name:"Douceur des Dunes",ar:"الحلوة",profile:"Naturellement doux",tag:"Doux sans sucre",roast:"Torréfaction moyenne",accent:"#C99A5B",icon:"drop",desc:"Douceur sans sucre — orge torréfié, cannelle, poudre de datte & cardamome. Onctueux & doux.",prices:{"250g":15,"500g":26,"1kg":45}},
   {id:"sahara",name:"Gingembre du Sahara",ar:"الصحراوية",profile:"Corsé & relevé",tag:"Coup de gingembre",roast:"Torréfaction foncée",accent:"#A0552A",icon:"flame",desc:"Style yéménite, dominé par le gingembre & foncé. Fort, vif, énergisant.",prices:{"250g":16,"500g":28,"1kg":50}},
 ]
+PRODUCTS.forEach(p=>{p.img=A+'photos/'+p.id+'.jpg'})
 export const productById=id=>PRODUCTS.find(p=>p.id===id)

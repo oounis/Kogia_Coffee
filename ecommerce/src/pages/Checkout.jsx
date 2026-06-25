@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Wallet, Truck, ShieldCheck, CalendarCheck } from 'lucide-react'
 import { loadCart, saveCart, addOrder } from '../store.js'
 import { GOUVERNORATS, CITIES, CUR, DELIVERY, PRODUCTS } from '../data.js'
-import { BlendMark } from '../marks.jsx'
+import { ProductImg } from '../marks.jsx'
 import toast from 'react-hot-toast'
 const etaDate=()=> new Date(Date.now()+3*86400000).toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})
 export default function Checkout(){
@@ -38,7 +38,7 @@ export default function Checkout(){
       </div>
       <div className="card p-6 h-fit">
         <h3 className="serif text-lg font-bold mb-3">Votre commande</h3>
-        <div className="space-y-3">{cart.map(i=>{const p=PRODUCTS.find(x=>x.id===i.id);return(<div key={i.key} className="flex items-center gap-2 text-sm"><BlendMark p={p} size={34}/><span className="flex-1 text-muted">{i.name} <b className="text-ink">×{i.qty}</b> <span className="text-xs">({i.size})</span></span><span className="font-semibold">{i.price*i.qty} {CUR}</span></div>)})}</div>
+        <div className="space-y-3">{cart.map(i=>{const p=PRODUCTS.find(x=>x.id===i.id);return(<div key={i.key} className="flex items-center gap-2 text-sm"><ProductImg p={p} size={36} radius={10}/><span className="flex-1 text-muted">{i.name} <b className="text-ink">×{i.qty}</b> <span className="text-xs">({i.size})</span></span><span className="font-semibold">{i.price*i.qty} {CUR}</span></div>)})}</div>
         <div className="border-t border-line mt-3 pt-3 space-y-1 text-sm">
           <div className="flex justify-between text-muted"><span>Sous-total</span><span>{sub} {CUR}</span></div>
           <div className="flex justify-between text-muted"><span>Livraison</span><span>{fee===0?'Gratuite ✓':fee+' '+CUR}</span></div>

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ShoppingBag, Plus, Minus, X, Coffee, Truck, Leaf, ArrowRight, Wallet, ShieldCheck, Star } from 'lucide-react'
 import { PRODUCTS, SIZES, CUR, DELIVERY } from '../data.js'
-import { KogiaMark, BlendMark } from '../marks.jsx'
+import { KogiaMark, ProductImg } from '../marks.jsx'
 import { loadCart, saveCart } from '../store.js'
 
 export default function Store(){
@@ -34,7 +34,7 @@ export default function Store(){
         <div className="flex gap-3 mt-7 flex-wrap"><a href="#produits" className="inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold text-white" style={{background:'#B5673A'}}>Voir nos cafés <ArrowRight size={17}/></a><a href="#livraison" className="inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold bg-white border border-line">Livraison & paiement</a></div>
       </motion.div>
       <motion.div initial={{opacity:0,scale:.96}} animate={{opacity:1,scale:1}} className="card p-8 flex flex-col items-center text-center" style={{background:'linear-gradient(160deg,#fff,#F6EAE0)'}}>
-        <BlendMark p={best} size={150}/>
+        <ProductImg p={best} size={170} radius={24}/>
         <div className="serif text-2xl font-bold mt-4">{best.name}</div><div className="text-muted text-sm">{best.ar} · {best.profile}</div>
         <button onClick={()=>add(best,'250g')} className="mt-3 inline-flex items-center gap-1.5 text-white text-sm font-bold px-4 py-2 rounded-full" style={{background:'#B5673A'}}><Plus size={15}/> Ajouter · {best.prices['250g']} {CUR}</button>
       </motion.div>
@@ -78,7 +78,7 @@ export default function Store(){
       <div className="flex items-center justify-between px-6 py-5 border-b border-line"><h3 className="serif text-2xl font-bold">Votre panier</h3><button onClick={()=>setOpen(false)} className="text-muted"><X/></button></div>
       <div className="flex-1 overflow-y-auto thin px-6 py-5 flex flex-col gap-4">
         {cart.length===0? <div className="text-center text-muted mt-12">Votre panier est vide.<br/>Choisissez un café ☕</div>
-          : cart.map(i=>{const p=PRODUCTS.find(x=>x.id===i.id);return(<div key={i.key} className="flex gap-3 items-center"><BlendMark p={p} size={46}/>
+          : cart.map(i=>{const p=PRODUCTS.find(x=>x.id===i.id);return(<div key={i.key} className="flex gap-3 items-center"><ProductImg p={p} size={46} radius={12}/>
             <div className="flex-1"><b className="text-sm">{i.name}</b><div className="text-xs text-muted">{i.size} · {i.price} {CUR}</div>
               <div className="flex items-center gap-2 mt-1"><button onClick={()=>chg(i.key,-1)} className="w-6 h-6 rounded-md border border-line grid place-items-center"><Minus size={13}/></button><span className="text-sm">{i.qty}</span><button onClick={()=>chg(i.key,1)} className="w-6 h-6 rounded-md border border-line grid place-items-center"><Plus size={13}/></button></div></div>
             <div className="serif font-bold" style={{color:'#B5673A'}}>{i.price*i.qty} {CUR}</div></div>)})}
@@ -97,7 +97,7 @@ export default function Store(){
 function ProductCard({p,onAdd}){
   const [size,setSize]=useState('250g')
   return (<motion.div initial={{opacity:0,y:16}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="card overflow-hidden flex flex-col hover:shadow-xl transition">
-    <div className="aspect-[5/3] grid place-items-center relative" style={{background:`linear-gradient(140deg,#FBF8F4,${p.accent}22)`}}><BlendMark p={p} size={108}/>
+    <div className="aspect-[5/3] relative overflow-hidden"><img src={p.img} alt={p.name} loading="lazy" className="w-full h-full object-cover"/>
       <span className="absolute top-3 left-3 text-[11px] font-bold px-2.5 py-1 rounded-full text-white" style={{background:p.accent}}>{p.best?'★ Best-seller':p.premium?'Premium':p.tag}</span></div>
     <div className="p-5 flex flex-col gap-1 flex-1">
       <div className="serif text-lg" style={{color:p.accent}}>{p.ar}</div>
