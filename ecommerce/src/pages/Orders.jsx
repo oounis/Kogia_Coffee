@@ -22,7 +22,7 @@ export default function Orders(){
      : <div className="space-y-3">{orders.map(o=>(<div key={o.id} className="card p-4">
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div><div className="font-bold flex items-center gap-2">{o.id} <span className="text-xs font-bold px-2 py-0.5 rounded-full text-white" style={{background:COL[o.status]}}>{o.status}</span></div>
-            <div className="text-sm text-muted">{o.customer.name} · {o.customer.phone} · {o.customer.gov}</div>
+            <div className="text-sm text-muted">{o.customer.name} · {o.customer.phone} · {o.customer.city}, {o.customer.gov}</div>
             <div className="text-xs text-muted">{o.customer.address}{o.customer.notes&&` · 📝 ${o.customer.notes}`}</div>
             <div className="text-xs text-muted mt-1">{o.items.map(i=>`${i.name} ×${i.qty} (${i.size})`).join(' · ')}</div></div>
           <div className="text-right"><div className="serif text-xl font-bold" style={{color:'#B5673A'}}>{o.total} {CUR}</div><div className="text-[11px] text-muted">{o.payment}</div>
