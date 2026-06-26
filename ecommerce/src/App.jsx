@@ -4,6 +4,7 @@ import Store from './pages/Store.jsx'
 import Checkout from './pages/Checkout.jsx'
 import Confirm from './pages/Confirm.jsx'
 import Orders from './pages/Orders.jsx'
+import Track from './pages/Track.jsx'
 export default function App(){
   return (<HashRouter>
     <Toaster position="top-right" toastOptions={{style:{borderRadius:'12px',fontSize:'14px'}}}/>
@@ -11,6 +12,7 @@ export default function App(){
       <Route path="/" element={<Store/>}/>
       <Route path="/checkout" element={<Checkout/>}/>
       <Route path="/confirmation/:id" element={<Confirm/>}/>
+      <Route path="/suivi" element={<Track/>}/>
       <Route path="/admin" element={<Orders/>}/>
     </Routes>
   </HashRouter>)

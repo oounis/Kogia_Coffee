@@ -1,24 +1,29 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ShoppingBag, Plus, Minus, X, Coffee, Truck, Leaf, ArrowRight, Wallet, ShieldCheck, Search, Sparkles, Star } from 'lucide-react'
-import { PRODUCTS, SIZES, CUR, DELIVERY, PROFILS, BUNDLE, productById } from '../data.js'
+import { ShoppingBag, Plus, Minus, X, Coffee, Truck, Leaf, ArrowRight, Wallet, ShieldCheck, Search, Sparkles, Star, Repeat, Gift, Quote, Mail, Crown, Check } from 'lucide-react'
+import { PRODUCTS, SIZES, CUR, DELIVERY, PROFILS, BUNDLE, GIFTS, SUBSCRIPTION, FEATURED, REVIEWS, productById } from '../data.js'
 import { KogiaMark, ProductImg, Stars, Intensity } from '../marks.jsx'
-import { loadCart, saveCart } from '../store.js'
+import { loadCart, saveCart, addNewsletter } from '../store.js'
+import toast from 'react-hot-toast'
 
 export default function Store(){
   const nav=useNavigate()
-  const [cart,setCart]=useState(loadCart); const [open,setOpen]=useState(false); const [toast,setToast]=useState('')
+  const [cart,setCart]=useState(loadCart); const [open,setOpen]=useState(false); const [toastMsg,setToastMsg]=useState('')
   const [detail,setDetail]=useState(null) // produit ouvert en détail
   const [query,setQuery]=useState(''); const [filter,setFilter]=useState('all')
   useEffect(()=>saveCart(cart),[cart])
-  const note=m=>{setToast(m);clearTimeout(window.__t);window.__t=setTimeout(()=>setToast(''),1800)}
+  const note=m=>{setToastMsg(m);clearTimeout(window.__t);window.__t=setTimeout(()=>setToastMsg(''),1800)}
   const add=(p,size,qty=1)=>{const key=`${p.id}_${size}`;setCart(c=>{const e=c.find(i=>i.key===key);return e?c.map(i=>i.key===key?{...i,qty:i.qty+qty}:i):[...c,{key,id:p.id,size,name:p.name,price:p.prices[size],qty}]});note(`${p.name} (${size}) ajouté ✓`)}
   const addBundle=()=>{const key='bundle_'+BUNDLE.id;setCart(c=>{const e=c.find(i=>i.key===key);return e?c.map(i=>i.key===key?{...i,qty:i.qty+1}:i):[...c,{key,id:BUNDLE.id,bundle:true,size:'Pack',name:BUNDLE.name,price:BUNDLE.price,qty:1}]});note('Pack Découverte ajouté ✓')}
+  const addGift=g=>{const key='gift_'+g.id;setCart(c=>{const e=c.find(i=>i.key===key);return e?c.map(i=>i.key===key?{...i,qty:i.qty+1}:i):[...c,{key,id:g.id,gift:true,size:'Coffret',name:g.name,price:g.price,qty:1}]});note(`${g.name} ajouté ✓`)}
+  const addSub=(p,freq)=>{const price=Math.round(p.prices[SUBSCRIPTION.size]*(1-SUBSCRIPTION.discount));const key=`sub_${p.id}_${freq.id}`;setCart(c=>{const e=c.find(i=>i.key===key);return e?c.map(i=>i.key===key?{...i,qty:i.qty+1}:i):[...c,{key,id:p.id,sub:true,freq:freq.id,freqLabel:freq.sub,size:SUBSCRIPTION.size,name:`${p.name} · Abonnement`,price,qty:1}]});note(`Abonnement ${p.name} ajouté ✓`)}
   const chg=(key,d)=>setCart(c=>c.map(i=>i.key===key?{...i,qty:i.qty+d}:i).filter(i=>i.qty>0))
   const count=cart.reduce((s,i)=>s+i.qty,0), sub=cart.reduce((s,i)=>s+i.price*i.qty,0)
   const fee=sub>=DELIVERY.freeOver||sub===0?0:DELIVERY.fee, total=sub+fee
   const best=PRODUCTS.find(p=>p.best)
+  const featured=productById(FEATURED.id)
+  const cartIcon=i=>i.bundle?<div className="w-[46px] h-[46px] rounded-xl grid place-items-center text-white shrink-0" style={{background:'#B5673A'}}><Sparkles size={20}/></div>:i.gift?<div className="w-[46px] h-[46px] rounded-xl grid place-items-center text-white shrink-0" style={{background:'#9C5630'}}><Gift size={20}/></div>:i.sub?<div className="relative shrink-0"><ProductImg p={productById(i.id)} size={46} radius={12}/><span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full grid place-items-center text-white border-2 border-cream" style={{background:'#B5673A'}}><Repeat size={11}/></span></div>:<ProductImg p={productById(i.id)} size={46} radius={12}/>
 
   const q=query.trim().toLowerCase()
   const list=PRODUCTS.filter(p=>(filter==='all'||p.cat===filter)&&(!q||p.name.toLowerCase().includes(q)||p.desc.toLowerCase().includes(q)||p.profile.toLowerCase().includes(q)))
@@ -27,7 +32,7 @@ export default function Store(){
     <header className="sticky top-0 z-30 backdrop-blur bg-cream/80 border-b border-line">
       <div className="mx-auto w-[92vw] max-w-[1120px] flex items-center justify-between py-3">
         <a href="#" className="flex items-center gap-2"><KogiaMark size={34}/><div><div className="serif font-extrabold leading-none text-lg">Kogia Coffee</div><div className="text-[10px] text-muted">par Kogia Business</div></div></a>
-        <nav className="hidden md:flex gap-7 text-sm text-muted font-medium"><a href="#produits" className="hover:text-caramel">Nos cafés</a><a href="#pack" className="hover:text-caramel">Pack Découverte</a><a href="#qualite" className="hover:text-caramel">Qualité</a><a href="#livraison" className="hover:text-caramel">Livraison</a></nav>
+        <nav className="hidden md:flex gap-6 text-sm text-muted font-medium"><a href="#produits" className="hover:text-caramel">Nos cafés</a><a href="#abonnement" className="hover:text-caramel">Abonnement</a><a href="#coffrets" className="hover:text-caramel">Coffrets</a><a href="#avis" className="hover:text-caramel">Avis</a><a href="#/suivi" className="hover:text-caramel">Suivi</a></nav>
         <button onClick={()=>setOpen(true)} className="relative inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-white" style={{background:'#B5673A'}}><ShoppingBag size={16}/> Panier{count>0&&<span className="absolute -top-1.5 -right-1.5 min-w-5 h-5 px-1 grid place-items-center rounded-full text-[11px] bg-ink text-white">{count}</span>}</button>
       </div>
     </header>
@@ -37,20 +42,33 @@ export default function Store(){
       <Sparkles size={13} className="inline -mt-0.5 mr-1"/> Livraison <b>gratuite</b> dès {DELIVERY.freeOver} {CUR} · Pack Découverte 3 mélanges à {BUNDLE.price} {CUR} <span className="opacity-70">(au lieu de {BUNDLE.oldPrice})</span>
     </div>
 
-    <section className="mx-auto w-[92vw] max-w-[1120px] grid md:grid-cols-2 gap-10 items-center py-14">
-      <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}}>
+    <section className="mx-auto w-[92vw] max-w-[1120px] grid md:grid-cols-2 gap-10 items-center pt-14 pb-12">
+      <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{duration:.5}}>
         <div className="inline-flex items-center gap-2 text-xs font-bold px-3 py-1 rounded-full" style={{background:'#F6EAE0',color:'#B5673A'}}>☕ Torréfié & moulu frais · Tunisie 🇹🇳</div>
         <h1 className="serif text-5xl md:text-6xl font-extrabold leading-[1.05] mt-4">Le café tunisien,<br/>livré chez <span style={{color:'#B5673A'}}>vous</span>.</h1>
         <p className="text-lg text-muted mt-4 max-w-[44ch]">Six mélanges traditionnels, en poudre, par sachet. <b className="text-ink">Paiement à la livraison</b> · livraison gratuite dès {DELIVERY.freeOver} {CUR}.</p>
         <div className="flex items-center gap-4 mt-5 text-sm"><span className="flex items-center gap-1.5"><Stars value={4.8} size={16}/> <b>4,8</b><span className="text-muted">/5 · 800+ avis</span></span><span className="text-muted flex items-center gap-1.5"><Coffee size={15} style={{color:'#B5673A'}}/> Torréfié à Djerba</span></div>
-        <div className="flex gap-3 mt-7 flex-wrap"><a href="#produits" className="inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold text-white" style={{background:'#B5673A'}}>Voir nos cafés <ArrowRight size={17}/></a><a href="#pack" className="inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold bg-white border border-line">Le Pack Découverte</a></div>
+        <div className="flex gap-3 mt-7 flex-wrap"><a href="#produits" className="inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold text-white shadow-lg shadow-caramel/20 hover:-translate-y-0.5 transition" style={{background:'#B5673A'}}>Voir nos cafés <ArrowRight size={17}/></a><a href="#abonnement" className="inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold bg-white border border-line hover:border-caramel transition"><Repeat size={16}/> S'abonner −10%</a></div>
       </motion.div>
-      <motion.div initial={{opacity:0,scale:.96}} animate={{opacity:1,scale:1}} className="card p-8 flex flex-col items-center text-center cursor-pointer hover:shadow-xl transition" style={{background:'linear-gradient(160deg,#fff,#F6EAE0)'}} onClick={()=>setDetail(best)}>
+      <motion.div initial={{opacity:0,scale:.96}} animate={{opacity:1,scale:1}} transition={{duration:.5,delay:.1}} whileHover={{y:-4}} className="card p-8 flex flex-col items-center text-center cursor-pointer hover:shadow-2xl transition" style={{background:'linear-gradient(160deg,#fff,#F6EAE0)'}} onClick={()=>setDetail(best)}>
         <span className="self-start text-[11px] font-bold px-2.5 py-1 rounded-full text-white" style={{background:best.accent}}>★ Best-seller</span>
-        <ProductImg p={best} size={170} radius={24}/>
+        <motion.div whileHover={{rotate:-2,scale:1.03}} transition={{type:'spring',stiffness:200}}><ProductImg p={best} size={170} radius={24}/></motion.div>
         <div className="serif text-2xl font-bold mt-4">{best.name}</div><div className="text-muted text-sm">{best.ar} · {best.profile}</div>
         <div className="flex items-center gap-1.5 mt-1 text-sm"><Stars value={best.rating} size={14}/> <b>{best.rating.toFixed(1)}</b> <span className="text-muted">({best.reviews})</span></div>
-        <button onClick={e=>{e.stopPropagation();add(best,'250g')}} className="mt-3 inline-flex items-center gap-1.5 text-white text-sm font-bold px-4 py-2 rounded-full" style={{background:'#B5673A'}}><Plus size={15}/> Ajouter · {best.prices['250g']} {CUR}</button>
+        <button onClick={e=>{e.stopPropagation();add(best,'250g')}} className="mt-3 inline-flex items-center gap-1.5 text-white text-sm font-bold px-4 py-2 rounded-full hover:scale-105 transition" style={{background:'#B5673A'}}><Plus size={15}/> Ajouter · {best.prices['250g']} {CUR}</button>
+      </motion.div>
+    </section>
+
+    {/* Café du mois */}
+    <section className="mx-auto w-[92vw] max-w-[1120px] pb-4">
+      <motion.div initial={{opacity:0,y:18}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="card overflow-hidden grid sm:grid-cols-[auto_1fr_auto] items-center gap-5 p-5 sm:p-6" style={{background:'linear-gradient(135deg,#fff,#F6EAE0)'}}>
+        <div className="relative shrink-0 mx-auto sm:mx-0"><ProductImg p={featured} size={92} radius={18}/><span className="absolute -top-2 -left-2 w-8 h-8 rounded-full grid place-items-center text-white shadow" style={{background:'#B5673A'}}><Crown size={16}/></span></div>
+        <div className="text-center sm:text-left">
+          <div className="text-[11px] font-bold uppercase tracking-widest" style={{color:'#B5673A'}}>Café du mois · {FEATURED.month}</div>
+          <h3 className="serif text-2xl font-extrabold mt-0.5">{featured.name}</h3>
+          <p className="text-sm text-muted mt-1 max-w-[60ch]">{FEATURED.pitch}</p>
+        </div>
+        <button onClick={()=>setDetail(featured)} className="shrink-0 inline-flex items-center gap-1.5 rounded-full px-5 py-2.5 font-semibold text-white whitespace-nowrap mx-auto" style={{background:'#B5673A'}}>Découvrir <ArrowRight size={16}/></button>
       </motion.div>
     </section>
 
@@ -98,6 +116,49 @@ export default function Store(){
       </div>
     </section>
 
+    {/* Abonnement café */}
+    <section id="abonnement" className="bg-white border-y border-line py-16"><div className="mx-auto w-[92vw] max-w-[1120px]">
+      <div className="text-center max-w-[62ch] mx-auto mb-8">
+        <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest" style={{color:'#B5673A'}}><Repeat size={14}/> Abonnement café</div>
+        <h2 className="serif text-4xl font-extrabold mt-2">Ne soyez jamais à court de café</h2>
+        <p className="text-muted mt-2">Recevez votre mélange préféré à la fréquence de votre choix, <b className="text-ink">−10% à vie</b> et livraison toujours offerte. Sans engagement, paiement à la livraison.</p>
+      </div>
+      <div className="grid md:grid-cols-[1fr_1.1fr] gap-6 items-center">
+        <div className="flex flex-wrap gap-3 justify-center md:justify-start">
+          {SUBSCRIPTION.perks.map(t=>(<div key={t} className="flex items-center gap-2 text-sm card px-4 py-3"><span className="w-7 h-7 rounded-full grid place-items-center text-white shrink-0" style={{background:'#B5673A'}}><Check size={15}/></span>{t}</div>))}
+        </div>
+        <SubscriptionBuilder onSub={addSub}/>
+      </div>
+    </div></section>
+
+    {/* Coffrets cadeaux */}
+    <section id="coffrets" className="mx-auto w-[92vw] max-w-[1120px] py-16">
+      <div className="text-center max-w-[60ch] mx-auto mb-8">
+        <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest" style={{color:'#B5673A'}}><Gift size={14}/> Coffrets cadeaux</div>
+        <h2 className="serif text-4xl font-extrabold mt-2">À offrir, prêt en un clic</h2>
+        <p className="text-muted mt-2">Des coffrets composés à la main, dans un bel écrin Kogia avec carte personnalisée. Livrés où vous voulez.</p>
+      </div>
+      <div className="grid md:grid-cols-2 gap-6">{GIFTS.map(g=><GiftCard key={g.id} g={g} onAdd={addGift}/>)}</div>
+    </section>
+
+    {/* Avis clients */}
+    <section id="avis" className="bg-white border-y border-line py-16"><div className="mx-auto w-[92vw] max-w-[1120px]">
+      <div className="text-center max-w-[60ch] mx-auto mb-8">
+        <div className="text-xs font-bold uppercase tracking-widest" style={{color:'#B5673A'}}>Ils nous font confiance</div>
+        <h2 className="serif text-4xl font-extrabold mt-2">Avis de nos clients</h2>
+        <div className="flex items-center justify-center gap-2 mt-3 text-sm"><Stars value={4.8} size={18}/><b>4,8</b><span className="text-muted">/5 sur 800+ commandes livrées</span></div>
+      </div>
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">{REVIEWS.map((r,i)=>(
+        <motion.div key={i} initial={{opacity:0,y:16}} whileInView={{opacity:1,y:0}} viewport={{once:true}} transition={{delay:i*.05}} className="card p-5 flex flex-col">
+          <Quote size={22} style={{color:'#E0C3AC'}}/>
+          <p className="text-sm mt-2 flex-1">« {r.quote} »</p>
+          <div className="flex items-center justify-between mt-4 pt-3 border-t border-line">
+            <div><div className="font-bold text-sm">{r.name}</div><div className="text-xs text-muted">{r.gov} · {r.blend}</div></div>
+            <Stars value={r.stars} size={13}/>
+          </div>
+        </motion.div>))}</div>
+    </div></section>
+
     <section id="qualite" className="bg-white border-y border-line py-16"><div className="mx-auto w-[92vw] max-w-[1120px]">
       <div className="text-center mb-8"><div className="text-xs font-bold uppercase tracking-widest" style={{color:'#B5673A'}}>Notre promesse</div><h2 className="serif text-4xl font-extrabold mt-2">Du grain à votre tasse</h2></div>
       <div className="grid md:grid-cols-3 gap-5">{[[<Coffee/>,'Torréfié frais','Chaque mélange est torréfié et moulu à la commande, jamais en avance.'],[<Leaf/>,'Recettes authentiques','Des recettes traditionnelles, listées au gramme près — pas de secret.'],[<Truck/>,'Livré chez vous','Commandez en ligne, recevez à domicile et payez à la livraison.']].map(([ic,t,d],i)=>(<div key={i} className="card p-6"><div className="w-12 h-12 rounded-xl grid place-items-center mb-3" style={{background:'#F6EAE0',color:'#B5673A'}}>{ic}</div><h3 className="serif text-xl font-bold">{t}</h3><p className="text-muted text-sm mt-1">{d}</p></div>))}</div>
@@ -122,10 +183,23 @@ export default function Store(){
       </div>
     </div></section>
 
+    {/* Newsletter */}
+    <section className="mx-auto w-[92vw] max-w-[1120px] py-16">
+      <div className="card overflow-hidden grid md:grid-cols-[1.1fr_.9fr] gap-6 items-center p-8 md:p-10" style={{background:'linear-gradient(135deg,#2A211B,#4a362a)'}}>
+        <div className="text-white">
+          <div className="inline-flex items-center gap-2 text-xs font-bold px-3 py-1 rounded-full" style={{background:'#B5673A'}}><Mail size={13}/> Newsletter</div>
+          <h2 className="serif text-3xl font-extrabold mt-3">Recettes, offres & nouveaux mélanges</h2>
+          <p className="text-white/70 mt-2 text-sm max-w-[44ch]">Inscrivez-vous et recevez <b className="text-white">un code de bienvenue −10%</b> ainsi que nos conseils de préparation à la tunisienne.</p>
+        </div>
+        <NewsletterForm/>
+      </div>
+    </section>
+
     <footer className="bg-ink text-white/75 py-12"><div className="mx-auto w-[92vw] max-w-[1120px] flex flex-wrap justify-between gap-6">
       <div className="max-w-[280px]"><div className="flex items-center gap-2 mb-1"><KogiaMark size={28} c1="#E8B98C" c2="#C0743C"/><span className="serif font-extrabold text-white text-lg">Kogia Coffee</span></div><p className="text-sm">Café traditionnel tunisien, torréfié & moulu frais. Une marque de Kogia Business.</p></div>
-      <div><h4 className="serif text-white font-bold mb-2">Boutique</h4><a href="#produits" className="block text-sm py-0.5 hover:text-white">Nos cafés</a><a href="#pack" className="block text-sm py-0.5 hover:text-white">Pack Découverte</a><a href="#livraison" className="block text-sm py-0.5 hover:text-white">Livraison</a></div>
-      <div><h4 className="serif text-white font-bold mb-2">Contact</h4><span className="block text-sm py-0.5">Djerba, Tunisie 🇹🇳</span><span className="block text-sm py-0.5">+216 — — —</span><a href="#/admin" className="block text-sm py-0.5 hover:text-white">Espace gérant</a></div>
+      <div><h4 className="serif text-white font-bold mb-2">Boutique</h4><a href="#produits" className="block text-sm py-0.5 hover:text-white">Nos cafés</a><a href="#abonnement" className="block text-sm py-0.5 hover:text-white">Abonnement</a><a href="#coffrets" className="block text-sm py-0.5 hover:text-white">Coffrets cadeaux</a><a href="#avis" className="block text-sm py-0.5 hover:text-white">Avis clients</a></div>
+      <div><h4 className="serif text-white font-bold mb-2">Aide</h4><a href="#/suivi" className="block text-sm py-0.5 hover:text-white">Suivre ma commande</a><a href="#livraison" className="block text-sm py-0.5 hover:text-white">Livraison & paiement</a><a href="#/admin" className="block text-sm py-0.5 hover:text-white">Espace gérant</a></div>
+      <div><h4 className="serif text-white font-bold mb-2">Contact</h4><span className="block text-sm py-0.5">Djerba, Tunisie 🇹🇳</span><span className="block text-sm py-0.5">+216 — — —</span></div>
     </div><div className="mx-auto w-[92vw] max-w-[1120px] border-t border-white/10 mt-8 pt-4 text-xs flex justify-between flex-wrap gap-2"><span>© 2026 Kogia Coffee · Kogia Group</span><span>Paiement à la livraison · Conçu en Tunisie</span></div></footer>
 
     {/* Détail produit */}
@@ -137,10 +211,10 @@ export default function Store(){
       <div className="flex items-center justify-between px-6 py-5 border-b border-line"><h3 className="serif text-2xl font-bold">Votre panier</h3><button onClick={()=>setOpen(false)} className="text-muted"><X/></button></div>
       <div className="flex-1 overflow-y-auto thin px-6 py-5 flex flex-col gap-4">
         {cart.length===0? <div className="text-center text-muted mt-12">Votre panier est vide.<br/>Choisissez un café ☕</div>
-          : cart.map(i=>{const p=i.bundle?BUNDLE:PRODUCTS.find(x=>x.id===i.id);return(<div key={i.key} className="flex gap-3 items-center">{i.bundle?<div className="w-[46px] h-[46px] rounded-xl grid place-items-center text-white shrink-0" style={{background:'#B5673A'}}><Sparkles size={20}/></div>:<ProductImg p={p} size={46} radius={12}/>}
-            <div className="flex-1"><b className="text-sm">{i.name}</b><div className="text-xs text-muted">{i.size} · {i.price} {CUR}</div>
+          : cart.map(i=>(<div key={i.key} className="flex gap-3 items-center">{cartIcon(i)}
+            <div className="flex-1"><b className="text-sm">{i.name}</b><div className="text-xs text-muted">{i.size} · {i.price} {CUR}{i.sub&&<span className="ml-1 font-semibold" style={{color:'#B5673A'}}>· {i.freqLabel} −10%</span>}</div>
               <div className="flex items-center gap-2 mt-1"><button onClick={()=>chg(i.key,-1)} className="w-6 h-6 rounded-md border border-line grid place-items-center"><Minus size={13}/></button><span className="text-sm">{i.qty}</span><button onClick={()=>chg(i.key,1)} className="w-6 h-6 rounded-md border border-line grid place-items-center"><Plus size={13}/></button></div></div>
-            <div className="serif font-bold" style={{color:'#B5673A'}}>{i.price*i.qty} {CUR}</div></div>)})}
+            <div className="serif font-bold" style={{color:'#B5673A'}}>{i.price*i.qty} {CUR}</div></div>))}
       </div>
       <div className="border-t border-line px-6 py-5">
         {count>0&&<div className="text-sm space-y-1 mb-3"><div className="flex justify-between text-muted"><span>Sous-total</span><span>{sub} {CUR}</span></div>
@@ -149,7 +223,13 @@ export default function Store(){
         <div className="flex justify-between mb-3 text-lg"><span className="font-semibold">Total</span><b className="serif text-2xl" style={{color:'#B5673A'}}>{total} {CUR}</b></div>
         <button onClick={()=>{if(!count)return note('Panier vide');setOpen(false);nav('/checkout')}} className="w-full rounded-full py-3 font-semibold text-white" style={{background:'#B5673A'}}>Commander · paiement à la livraison</button></div>
     </aside>
-    <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] px-5 py-3 rounded-full bg-ink text-white text-sm font-semibold transition-all ${toast?'translate-y-0 opacity-100':'translate-y-24 opacity-0'}`}>{toast}</div>
+    {/* Barre panier mobile collante */}
+    <AnimatePresence>{count>0&&!open&&<motion.button initial={{y:80,opacity:0}} animate={{y:0,opacity:1}} exit={{y:80,opacity:0}} onClick={()=>setOpen(true)} className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-[55] w-[92vw] max-w-[460px] flex items-center justify-between rounded-full px-5 py-3.5 text-white shadow-2xl" style={{background:'#B5673A'}}>
+      <span className="flex items-center gap-2 font-semibold"><span className="w-6 h-6 grid place-items-center rounded-full bg-white/25 text-xs">{count}</span> Voir le panier</span>
+      <span className="serif font-extrabold text-lg">{total} {CUR}</span>
+    </motion.button>}</AnimatePresence>
+
+    <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] px-5 py-3 rounded-full bg-ink text-white text-sm font-semibold transition-all ${toastMsg?'translate-y-0 opacity-100':'translate-y-24 opacity-0'}`}>{toastMsg}</div>
   </div>)
 }
 
@@ -219,4 +299,50 @@ function ProductDetail({p,onClose,onAdd}){
       </div>
     </motion.div>
   </>)
+}
+
+function SubscriptionBuilder({onSub}){
+  const [pid,setPid]=useState(PRODUCTS[0].id); const [freq,setFreq]=useState(SUBSCRIPTION.freqs[1].id)
+  const p=productById(pid); const f=SUBSCRIPTION.freqs.find(x=>x.id===freq)
+  const full=p.prices[SUBSCRIPTION.size]; const price=Math.round(full*(1-SUBSCRIPTION.discount))
+  return (<motion.div initial={{opacity:0,y:16}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="card p-6">
+    <div className="flex items-center gap-3"><ProductImg p={p} size={56} radius={14}/><div><div className="serif text-lg font-bold">{p.name}</div><div className="text-xs text-muted">{p.profile} · {SUBSCRIPTION.size}</div></div></div>
+    <div className="mt-4"><div className="text-[11px] uppercase tracking-wide text-muted font-semibold mb-1.5">Mélange</div>
+      <select value={pid} onChange={e=>setPid(e.target.value)} className="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-sm">{PRODUCTS.map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select></div>
+    <div className="mt-3"><div className="text-[11px] uppercase tracking-wide text-muted font-semibold mb-1.5">Fréquence de livraison</div>
+      <div className="grid grid-cols-3 gap-1.5">{SUBSCRIPTION.freqs.map(x=>(<button key={x.id} onClick={()=>setFreq(x.id)} className={`rounded-xl py-2 text-xs font-semibold border leading-tight ${freq===x.id?'text-white':'text-muted border-line'}`} style={freq===x.id?{background:'#2A211B',borderColor:'#2A211B'}:{}}>{x.sub}<div className="text-[10px] font-normal opacity-80">/{x.every}</div></button>))}</div></div>
+    <div className="flex items-end justify-between mt-5"><div><div className="text-xs text-muted line-through">{full} {CUR}</div><div className="serif text-2xl font-extrabold" style={{color:'#B5673A'}}>{price} {CUR} <span className="text-xs font-semibold text-muted">/ {f.sub.toLowerCase()}</span></div></div><span className="text-[11px] font-bold px-2 py-1 rounded-full" style={{background:'#F6EAE0',color:'#B5673A'}}>−10%</span></div>
+    <button onClick={()=>onSub(p,f)} className="w-full rounded-full py-3 mt-4 font-semibold text-white inline-flex items-center justify-center gap-2" style={{background:'#B5673A'}}><Repeat size={16}/> M'abonner · paiement à la livraison</button>
+  </motion.div>)
+}
+
+function GiftCard({g,onAdd}){
+  return (<motion.div initial={{opacity:0,y:16}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="card overflow-hidden flex flex-col">
+    <div className="relative p-6 flex items-center justify-center gap-2" style={{background:'linear-gradient(135deg,#2A211B,#4a362a)'}}>
+      <span className="absolute top-3 left-3 text-[11px] font-bold px-2.5 py-1 rounded-full text-white" style={{background:g.accent}}>{g.badge}</span>
+      <span className="absolute top-3 right-3 text-white/80"><Gift size={20}/></span>
+      {g.items.map((id,i)=>{const p=productById(id);return <div key={id} className="rounded-xl overflow-hidden shadow-lg" style={{transform:`translateY(${i%2?'-10px':'8px'}) rotate(${i*3-4}deg)`,marginLeft:i?-14:0}}><ProductImg p={p} size={84} radius={12}/></div>})}
+    </div>
+    <div className="p-5 flex flex-col flex-1">
+      <div className="serif text-lg" style={{color:g.accent}}>{g.ar}</div>
+      <h3 className="serif text-xl font-bold">{g.name}</h3>
+      <p className="text-sm text-muted mt-1">{g.desc}</p>
+      <ul className="mt-3 space-y-1.5">{g.includes.map(x=>(<li key={x} className="flex items-start gap-2 text-sm"><Check size={15} className="mt-0.5 shrink-0" style={{color:g.accent}}/>{x}</li>))}</ul>
+      <div className="flex items-center justify-between mt-auto pt-4">
+        <div className="flex items-end gap-2"><div className="serif text-2xl font-extrabold" style={{color:'#B5673A'}}>{g.price} {CUR}</div><div className="text-sm text-muted line-through mb-0.5">{g.oldPrice} {CUR}</div></div>
+        <button onClick={()=>onAdd(g)} className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold text-white" style={{background:g.accent}}><Plus size={15}/> Offrir</button>
+      </div>
+    </div>
+  </motion.div>)
+}
+
+function NewsletterForm(){
+  const [email,setEmail]=useState(''); const [done,setDone]=useState(false)
+  const submit=e=>{e.preventDefault();const v=email.trim();if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v))return toast.error('E-mail invalide');const fresh=addNewsletter(v);toast.success(fresh?'Inscription confirmée · code BIENVENUE10 🎉':'Vous êtes déjà inscrit ✓');setDone(true)}
+  if(done) return (<div className="card p-6 text-center bg-white"><div className="w-12 h-12 rounded-full grid place-items-center text-white mx-auto" style={{background:'#B5673A'}}><Check size={24}/></div><div className="serif text-lg font-bold mt-2">Merci !</div><p className="text-sm text-muted mt-1">Utilisez le code <b style={{color:'#B5673A'}}>BIENVENUE10</b> à la caisse pour −10%.</p></div>)
+  return (<form onSubmit={submit} className="card p-5 bg-white">
+    <label className="text-xs font-semibold text-muted">Votre e-mail</label>
+    <div className="flex gap-2 mt-1.5"><input value={email} onChange={e=>setEmail(e.target.value)} type="email" placeholder="vous@exemple.tn" className="flex-1 rounded-full border border-line bg-white px-4 py-3 text-sm"/><button type="submit" className="rounded-full px-5 py-3 font-semibold text-white whitespace-nowrap" style={{background:'#B5673A'}}>S'inscrire</button></div>
+    <p className="text-[11px] text-muted mt-2">Pas de spam — un e-mail par mois maximum. Désinscription en un clic.</p>
+  </form>)
 }

@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Wallet, Truck, ShieldCheck, CalendarCheck } from 'lucide-react'
+import { ArrowLeft, Wallet, Truck, ShieldCheck, CalendarCheck, Tag, Check, Repeat, Gift } from 'lucide-react'
 import { loadCart, saveCart, addOrder } from '../store.js'
-import { GOUVERNORATS, CITIES, CUR, DELIVERY, PRODUCTS } from '../data.js'
+import { GOUVERNORATS, CITIES, CUR, DELIVERY, PRODUCTS, applyPromo } from '../data.js'
 import { ProductImg } from '../marks.jsx'
 import { Sparkles } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -10,14 +10,19 @@ const etaDate=()=> new Date(Date.now()+3*86400000).toLocaleDateString('fr-FR',{w
 export default function Checkout(){
   const nav=useNavigate(); const cart=loadCart()
   const [f,setF]=useState({name:'',phone:'',gov:'Tunis',city:'Tunis',address:'',notes:''})
-  const sub=cart.reduce((s,i)=>s+i.price*i.qty,0); const fee=sub>=DELIVERY.freeOver?0:DELIVERY.fee; const total=sub+fee
+  const [code,setCode]=useState(''); const [promo,setPromo]=useState(null)
+  const sub=cart.reduce((s,i)=>s+i.price*i.qty,0)
+  const discount=promo?promo.discount:0
+  const fee=(sub-discount)>=DELIVERY.freeOver?0:DELIVERY.fee; const total=sub-discount+fee
+  const hasSub=cart.some(i=>i.sub)
   if(cart.length===0) return <Empty nav={nav}/>
   const setGov=g=>setF({...f,gov:g,city:(CITIES[g]||[g])[0]})
+  const tryPromo=()=>{const r=applyPromo(code,sub);if(!r.ok){setPromo(null);return toast.error('Code promo invalide')}setPromo(r);toast.success(`Code ${r.code} appliqué · ${r.label}`)}
   const submit=()=>{
     if(!f.name.trim()||!f.phone.trim()||!f.address.trim()) return toast.error('Veuillez remplir nom, téléphone et adresse')
     if(!/^[+\d][\d\s]{6,}$/.test(f.phone.trim())) return toast.error('Numéro de téléphone invalide')
     const id='CMD-'+Date.now().toString().slice(-6)
-    addOrder({id,at:Date.now(),customer:f,items:cart,subtotal:sub,deliveryFee:fee,total,eta:etaDate(),payment:'Paiement à la livraison',status:'En attente'})
+    addOrder({id,at:Date.now(),customer:f,items:cart,subtotal:sub,discount,promoCode:promo?.code||null,deliveryFee:fee,total,eta:etaDate(),payment:'Paiement à la livraison',type:hasSub?'Abonnement':'Commande',status:'En attente'})
     saveCart([]); nav(`/confirmation/${id}`)
   }
   return (<div className="bg-ambient min-h-screen"><div className="mx-auto w-[92vw] max-w-[1000px] py-8">
@@ -39,12 +44,22 @@ export default function Checkout(){
       </div>
       <div className="card p-6 h-fit">
         <h3 className="serif text-lg font-bold mb-3">Votre commande</h3>
-        <div className="space-y-3">{cart.map(i=>{const p=PRODUCTS.find(x=>x.id===i.id);return(<div key={i.key} className="flex items-center gap-2 text-sm">{i.bundle?<span className="w-9 h-9 rounded-[10px] grid place-items-center text-white shrink-0" style={{background:'#B5673A'}}><Sparkles size={16}/></span>:<ProductImg p={p} size={36} radius={10}/>}<span className="flex-1 text-muted">{i.name} <b className="text-ink">×{i.qty}</b> <span className="text-xs">({i.size})</span></span><span className="font-semibold">{i.price*i.qty} {CUR}</span></div>)})}</div>
-        <div className="border-t border-line mt-3 pt-3 space-y-1 text-sm">
+        <div className="space-y-3">{cart.map(i=>{const p=PRODUCTS.find(x=>x.id===i.id);return(<div key={i.key} className="flex items-center gap-2 text-sm">{i.bundle?<span className="w-9 h-9 rounded-[10px] grid place-items-center text-white shrink-0" style={{background:'#B5673A'}}><Sparkles size={16}/></span>:i.gift?<span className="w-9 h-9 rounded-[10px] grid place-items-center text-white shrink-0" style={{background:'#9C5630'}}><Gift size={16}/></span>:<ProductImg p={p} size={36} radius={10}/>}<span className="flex-1 text-muted">{i.name} <b className="text-ink">×{i.qty}</b> <span className="text-xs">({i.size})</span>{i.sub&&<span className="text-[11px] block" style={{color:'#B5673A'}}>↻ {i.freqLabel}</span>}</span><span className="font-semibold">{i.price*i.qty} {CUR}</span></div>)})}</div>
+
+        {/* Code promo */}
+        <div className="mt-4">
+          <label className="text-xs font-semibold text-muted flex items-center gap-1.5"><Tag size={13}/> Code promo</label>
+          <div className="flex gap-2 mt-1.5"><input value={code} onChange={e=>{setCode(e.target.value);if(promo)setPromo(null)}} onKeyDown={e=>e.key==='Enter'&&tryPromo()} placeholder="Ex : BIENVENUE10" className="flex-1 rounded-xl border border-line bg-white px-3 py-2 text-sm uppercase"/><button onClick={tryPromo} className="rounded-xl px-4 py-2 text-sm font-semibold border border-line bg-white hover:border-caramel">Appliquer</button></div>
+          {promo&&<div className="text-xs mt-1.5 flex items-center gap-1.5" style={{color:'#10B981'}}><Check size={13}/> {promo.code} — {promo.label} appliqué</div>}
+        </div>
+
+        <div className="border-t border-line mt-4 pt-3 space-y-1 text-sm">
           <div className="flex justify-between text-muted"><span>Sous-total</span><span>{sub} {CUR}</span></div>
+          {discount>0&&<div className="flex justify-between" style={{color:'#10B981'}}><span>Remise ({promo.code})</span><span>−{discount} {CUR}</span></div>}
           <div className="flex justify-between text-muted"><span>Livraison</span><span>{fee===0?'Gratuite ✓':fee+' '+CUR}</span></div>
           <div className="flex justify-between pt-1"><span className="font-semibold">Total</span><b className="serif text-xl" style={{color:'#B5673A'}}>{total} {CUR}</b></div>
         </div>
+        {hasSub&&<div className="text-xs mt-3 flex items-start gap-1.5 rounded-lg p-2" style={{background:'#F6EAE0',color:'#8C5A33'}}><Repeat size={13} className="mt-0.5 shrink-0"/> Cette commande contient un <b>abonnement</b> : renouvellement automatique, sans engagement, payé à chaque livraison.</div>}
         <div className="text-xs text-muted mt-3 flex items-center gap-1.5 bg-cream rounded-lg p-2"><CalendarCheck size={13}/> Livraison estimée : <b className="text-ink">{etaDate()}</b></div>
       </div>
     </div>
