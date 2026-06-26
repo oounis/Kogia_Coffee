@@ -113,6 +113,15 @@ export default function Store(){
       </div>
     </section>
 
+    <section id="packaging" className="bg-white border-t border-line py-16"><div className="mx-auto w-[92vw] max-w-[1120px]">
+      <div className="text-center max-w-[60ch] mx-auto mb-9"><div className="text-xs font-bold uppercase tracking-widest" style={{color:'#B5673A'}}>Notre packaging</div>
+        <h2 className="serif text-4xl font-extrabold mt-2">Chaque mélange, son étiquette</h2>
+        <p className="text-muted mt-2">Des étiquettes dessinées sur mesure — nom français, nom arabe et origine de chaque café.</p></div>
+      <div className="flex gap-5 overflow-x-auto thin pb-4 snap-x">
+        {PRODUCTS.map(p=>(<img key={p.id} src={p.label} alt={`Étiquette ${p.name}`} loading="lazy" className="w-[210px] shrink-0 rounded-2xl shadow-lg snap-center hover:-translate-y-1 transition"/>))}
+      </div>
+    </div></section>
+
     <footer className="bg-ink text-white/75 py-12"><div className="mx-auto w-[92vw] max-w-[1120px] flex flex-wrap justify-between gap-6">
       <div className="max-w-[280px]"><div className="flex items-center gap-2 mb-1"><KogiaMark size={28} c1="#E8B98C" c2="#C0743C"/><span className="serif font-extrabold text-white text-lg">Kogia Coffee</span></div><p className="text-sm">Café traditionnel tunisien, torréfié & moulu frais. Une marque de Kogia Business.</p></div>
       <div><h4 className="serif text-white font-bold mb-2">Boutique</h4><a href="#produits" className="block text-sm py-0.5 hover:text-white">Nos cafés</a><a href="#pack" className="block text-sm py-0.5 hover:text-white">Pack Découverte</a><a href="#livraison" className="block text-sm py-0.5 hover:text-white">Livraison</a></div>
