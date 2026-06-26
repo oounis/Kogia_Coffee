@@ -1,42 +1,56 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { ShoppingBag, Plus, Minus, X, Coffee, Truck, Leaf, ArrowRight, Wallet, ShieldCheck, Star } from 'lucide-react'
-import { PRODUCTS, SIZES, CUR, DELIVERY } from '../data.js'
-import { KogiaMark, ProductImg } from '../marks.jsx'
+import { motion, AnimatePresence } from 'framer-motion'
+import { ShoppingBag, Plus, Minus, X, Coffee, Truck, Leaf, ArrowRight, Wallet, ShieldCheck, Search, Sparkles, Star } from 'lucide-react'
+import { PRODUCTS, SIZES, CUR, DELIVERY, PROFILS, BUNDLE, productById } from '../data.js'
+import { KogiaMark, ProductImg, Stars, Intensity } from '../marks.jsx'
 import { loadCart, saveCart } from '../store.js'
 
 export default function Store(){
   const nav=useNavigate()
   const [cart,setCart]=useState(loadCart); const [open,setOpen]=useState(false); const [toast,setToast]=useState('')
+  const [detail,setDetail]=useState(null) // produit ouvert en détail
+  const [query,setQuery]=useState(''); const [filter,setFilter]=useState('all')
   useEffect(()=>saveCart(cart),[cart])
   const note=m=>{setToast(m);clearTimeout(window.__t);window.__t=setTimeout(()=>setToast(''),1800)}
-  const add=(p,size)=>{const key=`${p.id}_${size}`;setCart(c=>{const e=c.find(i=>i.key===key);return e?c.map(i=>i.key===key?{...i,qty:i.qty+1}:i):[...c,{key,id:p.id,size,name:p.name,price:p.prices[size],qty:1}]});note(`${p.name} (${size}) ajouté ✓`)}
+  const add=(p,size,qty=1)=>{const key=`${p.id}_${size}`;setCart(c=>{const e=c.find(i=>i.key===key);return e?c.map(i=>i.key===key?{...i,qty:i.qty+qty}:i):[...c,{key,id:p.id,size,name:p.name,price:p.prices[size],qty}]});note(`${p.name} (${size}) ajouté ✓`)}
+  const addBundle=()=>{const key='bundle_'+BUNDLE.id;setCart(c=>{const e=c.find(i=>i.key===key);return e?c.map(i=>i.key===key?{...i,qty:i.qty+1}:i):[...c,{key,id:BUNDLE.id,bundle:true,size:'Pack',name:BUNDLE.name,price:BUNDLE.price,qty:1}]});note('Pack Découverte ajouté ✓')}
   const chg=(key,d)=>setCart(c=>c.map(i=>i.key===key?{...i,qty:i.qty+d}:i).filter(i=>i.qty>0))
   const count=cart.reduce((s,i)=>s+i.qty,0), sub=cart.reduce((s,i)=>s+i.price*i.qty,0)
   const fee=sub>=DELIVERY.freeOver||sub===0?0:DELIVERY.fee, total=sub+fee
   const best=PRODUCTS.find(p=>p.best)
 
+  const q=query.trim().toLowerCase()
+  const list=PRODUCTS.filter(p=>(filter==='all'||p.cat===filter)&&(!q||p.name.toLowerCase().includes(q)||p.desc.toLowerCase().includes(q)||p.profile.toLowerCase().includes(q)))
+
   return (<div className="bg-ambient min-h-screen">
     <header className="sticky top-0 z-30 backdrop-blur bg-cream/80 border-b border-line">
       <div className="mx-auto w-[92vw] max-w-[1120px] flex items-center justify-between py-3">
         <a href="#" className="flex items-center gap-2"><KogiaMark size={34}/><div><div className="serif font-extrabold leading-none text-lg">Kogia Coffee</div><div className="text-[10px] text-muted">par Kogia Business</div></div></a>
-        <nav className="hidden md:flex gap-7 text-sm text-muted font-medium"><a href="#produits" className="hover:text-caramel">Nos cafés</a><a href="#qualite" className="hover:text-caramel">Qualité</a><a href="#livraison" className="hover:text-caramel">Livraison</a></nav>
+        <nav className="hidden md:flex gap-7 text-sm text-muted font-medium"><a href="#produits" className="hover:text-caramel">Nos cafés</a><a href="#pack" className="hover:text-caramel">Pack Découverte</a><a href="#qualite" className="hover:text-caramel">Qualité</a><a href="#livraison" className="hover:text-caramel">Livraison</a></nav>
         <button onClick={()=>setOpen(true)} className="relative inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-white" style={{background:'#B5673A'}}><ShoppingBag size={16}/> Panier{count>0&&<span className="absolute -top-1.5 -right-1.5 min-w-5 h-5 px-1 grid place-items-center rounded-full text-[11px] bg-ink text-white">{count}</span>}</button>
       </div>
     </header>
 
-    <section className="mx-auto w-[92vw] max-w-[1120px] grid md:grid-cols-2 gap-10 items-center py-16">
+    {/* Bandeau promo */}
+    <div className="text-white text-center text-[13px] font-semibold py-2 px-3" style={{background:'linear-gradient(90deg,#9C5630,#B5673A)'}}>
+      <Sparkles size={13} className="inline -mt-0.5 mr-1"/> Livraison <b>gratuite</b> dès {DELIVERY.freeOver} {CUR} · Pack Découverte 3 mélanges à {BUNDLE.price} {CUR} <span className="opacity-70">(au lieu de {BUNDLE.oldPrice})</span>
+    </div>
+
+    <section className="mx-auto w-[92vw] max-w-[1120px] grid md:grid-cols-2 gap-10 items-center py-14">
       <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}}>
         <div className="inline-flex items-center gap-2 text-xs font-bold px-3 py-1 rounded-full" style={{background:'#F6EAE0',color:'#B5673A'}}>☕ Torréfié & moulu frais · Tunisie 🇹🇳</div>
         <h1 className="serif text-5xl md:text-6xl font-extrabold leading-[1.05] mt-4">Le café tunisien,<br/>livré chez <span style={{color:'#B5673A'}}>vous</span>.</h1>
         <p className="text-lg text-muted mt-4 max-w-[44ch]">Six mélanges traditionnels, en poudre, par sachet. <b className="text-ink">Paiement à la livraison</b> · livraison gratuite dès {DELIVERY.freeOver} {CUR}.</p>
-        <div className="flex gap-3 mt-7 flex-wrap"><a href="#produits" className="inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold text-white" style={{background:'#B5673A'}}>Voir nos cafés <ArrowRight size={17}/></a><a href="#livraison" className="inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold bg-white border border-line">Livraison & paiement</a></div>
+        <div className="flex items-center gap-4 mt-5 text-sm"><span className="flex items-center gap-1.5"><Stars value={4.8} size={16}/> <b>4,8</b><span className="text-muted">/5 · 800+ avis</span></span><span className="text-muted flex items-center gap-1.5"><Coffee size={15} style={{color:'#B5673A'}}/> Torréfié à Djerba</span></div>
+        <div className="flex gap-3 mt-7 flex-wrap"><a href="#produits" className="inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold text-white" style={{background:'#B5673A'}}>Voir nos cafés <ArrowRight size={17}/></a><a href="#pack" className="inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold bg-white border border-line">Le Pack Découverte</a></div>
       </motion.div>
-      <motion.div initial={{opacity:0,scale:.96}} animate={{opacity:1,scale:1}} className="card p-8 flex flex-col items-center text-center" style={{background:'linear-gradient(160deg,#fff,#F6EAE0)'}}>
+      <motion.div initial={{opacity:0,scale:.96}} animate={{opacity:1,scale:1}} className="card p-8 flex flex-col items-center text-center cursor-pointer hover:shadow-xl transition" style={{background:'linear-gradient(160deg,#fff,#F6EAE0)'}} onClick={()=>setDetail(best)}>
+        <span className="self-start text-[11px] font-bold px-2.5 py-1 rounded-full text-white" style={{background:best.accent}}>★ Best-seller</span>
         <ProductImg p={best} size={170} radius={24}/>
         <div className="serif text-2xl font-bold mt-4">{best.name}</div><div className="text-muted text-sm">{best.ar} · {best.profile}</div>
-        <button onClick={()=>add(best,'250g')} className="mt-3 inline-flex items-center gap-1.5 text-white text-sm font-bold px-4 py-2 rounded-full" style={{background:'#B5673A'}}><Plus size={15}/> Ajouter · {best.prices['250g']} {CUR}</button>
+        <div className="flex items-center gap-1.5 mt-1 text-sm"><Stars value={best.rating} size={14}/> <b>{best.rating.toFixed(1)}</b> <span className="text-muted">({best.reviews})</span></div>
+        <button onClick={e=>{e.stopPropagation();add(best,'250g')}} className="mt-3 inline-flex items-center gap-1.5 text-white text-sm font-bold px-4 py-2 rounded-full" style={{background:'#B5673A'}}><Plus size={15}/> Ajouter · {best.prices['250g']} {CUR}</button>
       </motion.div>
     </section>
 
@@ -48,8 +62,40 @@ export default function Store(){
     </div></div>
 
     <section id="produits" className="mx-auto w-[92vw] max-w-[1120px] py-16">
-      <div className="text-center max-w-[60ch] mx-auto mb-10"><div className="text-xs font-bold uppercase tracking-widest" style={{color:'#B5673A'}}>Notre carte</div><h2 className="serif text-4xl font-extrabold mt-2">Trouvez votre mélange</h2><p className="text-muted mt-2">Du plus léger au plus corsé. Choisissez votre format.</p></div>
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">{PRODUCTS.map(p=><ProductCard key={p.id} p={p} onAdd={add}/>)}</div>
+      <div className="text-center max-w-[60ch] mx-auto mb-7"><div className="text-xs font-bold uppercase tracking-widest" style={{color:'#B5673A'}}>Notre carte</div><h2 className="serif text-4xl font-extrabold mt-2">Trouvez votre mélange</h2><p className="text-muted mt-2">Du plus doux au plus corsé. Choisissez votre format.</p></div>
+
+      {/* Recherche + filtre par profil */}
+      <div className="flex flex-col sm:flex-row gap-3 items-center justify-between mb-8">
+        <div className="relative w-full sm:max-w-[280px]">
+          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted"/>
+          <input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Rechercher un mélange…" className="w-full rounded-full border border-line bg-white pl-10 pr-4 py-2.5 text-sm"/>
+        </div>
+        <div className="flex gap-1.5 flex-wrap justify-center">
+          <Chip active={filter==='all'} onClick={()=>setFilter('all')}>Tous</Chip>
+          {PROFILS.map(pr=><Chip key={pr.id} active={filter===pr.id} onClick={()=>setFilter(pr.id)}>{pr.emoji} {pr.label}</Chip>)}
+        </div>
+      </div>
+
+      {list.length===0
+        ? <div className="card p-10 text-center text-muted">Aucun mélange ne correspond. <button onClick={()=>{setQuery('');setFilter('all')}} className="underline" style={{color:'#B5673A'}}>Réinitialiser</button></div>
+        : <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">{list.map(p=><ProductCard key={p.id} p={p} onAdd={add} onOpen={()=>setDetail(p)}/>)}</div>}
+    </section>
+
+    {/* Pack Découverte */}
+    <section id="pack" className="mx-auto w-[92vw] max-w-[1120px] pb-16">
+      <div className="card overflow-hidden grid md:grid-cols-[1fr_1.1fr]" style={{background:'linear-gradient(135deg,#2A211B,#4a362a)'}}>
+        <div className="p-8 md:p-10 text-white">
+          <span className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full" style={{background:'#B5673A'}}><Sparkles size={13}/> Offre pack</span>
+          <h2 className="serif text-3xl md:text-4xl font-extrabold mt-3">{BUNDLE.name}</h2>
+          <div className="text-sm text-white/60 serif">{BUNDLE.ar}</div>
+          <p className="text-white/75 mt-3 max-w-[46ch] text-sm">{BUNDLE.desc}</p>
+          <div className="flex items-end gap-3 mt-5"><div className="serif text-4xl font-extrabold" style={{color:'#E8B98C'}}>{BUNDLE.price} {CUR}</div><div className="text-white/50 line-through mb-1">{BUNDLE.oldPrice} {CUR}</div><span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-white/15 mb-1.5">−{BUNDLE.oldPrice-BUNDLE.price} {CUR}</span></div>
+          <button onClick={addBundle} className="inline-flex items-center gap-2 rounded-full px-6 py-3 mt-5 font-semibold text-white" style={{background:'#B5673A'}}><Plus size={16}/> Ajouter le pack</button>
+        </div>
+        <div className="flex items-center justify-center gap-2 p-6 md:p-10" style={{background:'radial-gradient(420px 300px at 60% 30%,rgba(181,103,58,.35),transparent)'}}>
+          {BUNDLE.items.map((id,i)=>{const p=productById(id);return <div key={id} className="rounded-2xl overflow-hidden shadow-lg" style={{transform:`translateY(${i===1?'-14px':'10px'}) rotate(${i*4-4}deg)`}}><ProductImg p={p} size={118} radius={16}/></div>})}
+        </div>
+      </div>
     </section>
 
     <section id="qualite" className="bg-white border-y border-line py-16"><div className="mx-auto w-[92vw] max-w-[1120px]">
@@ -69,16 +115,20 @@ export default function Store(){
 
     <footer className="bg-ink text-white/75 py-12"><div className="mx-auto w-[92vw] max-w-[1120px] flex flex-wrap justify-between gap-6">
       <div className="max-w-[280px]"><div className="flex items-center gap-2 mb-1"><KogiaMark size={28} c1="#E8B98C" c2="#C0743C"/><span className="serif font-extrabold text-white text-lg">Kogia Coffee</span></div><p className="text-sm">Café traditionnel tunisien, torréfié & moulu frais. Une marque de Kogia Business.</p></div>
-      <div><h4 className="serif text-white font-bold mb-2">Boutique</h4><a href="#produits" className="block text-sm py-0.5 hover:text-white">Nos cafés</a><a href="#livraison" className="block text-sm py-0.5 hover:text-white">Livraison</a></div>
+      <div><h4 className="serif text-white font-bold mb-2">Boutique</h4><a href="#produits" className="block text-sm py-0.5 hover:text-white">Nos cafés</a><a href="#pack" className="block text-sm py-0.5 hover:text-white">Pack Découverte</a><a href="#livraison" className="block text-sm py-0.5 hover:text-white">Livraison</a></div>
       <div><h4 className="serif text-white font-bold mb-2">Contact</h4><span className="block text-sm py-0.5">Djerba, Tunisie 🇹🇳</span><span className="block text-sm py-0.5">+216 — — —</span><a href="#/admin" className="block text-sm py-0.5 hover:text-white">Espace gérant</a></div>
     </div><div className="mx-auto w-[92vw] max-w-[1120px] border-t border-white/10 mt-8 pt-4 text-xs flex justify-between flex-wrap gap-2"><span>© 2026 Kogia Coffee · Kogia Group</span><span>Paiement à la livraison · Conçu en Tunisie</span></div></footer>
 
+    {/* Détail produit */}
+    <AnimatePresence>{detail&&<ProductDetail p={detail} onClose={()=>setDetail(null)} onAdd={add}/>}</AnimatePresence>
+
+    {/* Panier */}
     <div onClick={()=>setOpen(false)} className={`fixed inset-0 z-40 bg-ink/40 backdrop-blur-sm transition ${open?'opacity-100':'opacity-0 pointer-events-none'}`}/>
     <aside className={`fixed top-0 right-0 h-full w-[min(420px,92vw)] z-50 bg-cream border-l border-line flex flex-col transition-transform duration-300 ${open?'translate-x-0':'translate-x-full'}`}>
       <div className="flex items-center justify-between px-6 py-5 border-b border-line"><h3 className="serif text-2xl font-bold">Votre panier</h3><button onClick={()=>setOpen(false)} className="text-muted"><X/></button></div>
       <div className="flex-1 overflow-y-auto thin px-6 py-5 flex flex-col gap-4">
         {cart.length===0? <div className="text-center text-muted mt-12">Votre panier est vide.<br/>Choisissez un café ☕</div>
-          : cart.map(i=>{const p=PRODUCTS.find(x=>x.id===i.id);return(<div key={i.key} className="flex gap-3 items-center"><ProductImg p={p} size={46} radius={12}/>
+          : cart.map(i=>{const p=i.bundle?BUNDLE:PRODUCTS.find(x=>x.id===i.id);return(<div key={i.key} className="flex gap-3 items-center">{i.bundle?<div className="w-[46px] h-[46px] rounded-xl grid place-items-center text-white shrink-0" style={{background:'#B5673A'}}><Sparkles size={20}/></div>:<ProductImg p={p} size={46} radius={12}/>}
             <div className="flex-1"><b className="text-sm">{i.name}</b><div className="text-xs text-muted">{i.size} · {i.price} {CUR}</div>
               <div className="flex items-center gap-2 mt-1"><button onClick={()=>chg(i.key,-1)} className="w-6 h-6 rounded-md border border-line grid place-items-center"><Minus size={13}/></button><span className="text-sm">{i.qty}</span><button onClick={()=>chg(i.key,1)} className="w-6 h-6 rounded-md border border-line grid place-items-center"><Plus size={13}/></button></div></div>
             <div className="serif font-bold" style={{color:'#B5673A'}}>{i.price*i.qty} {CUR}</div></div>)})}
@@ -90,23 +140,74 @@ export default function Store(){
         <div className="flex justify-between mb-3 text-lg"><span className="font-semibold">Total</span><b className="serif text-2xl" style={{color:'#B5673A'}}>{total} {CUR}</b></div>
         <button onClick={()=>{if(!count)return note('Panier vide');setOpen(false);nav('/checkout')}} className="w-full rounded-full py-3 font-semibold text-white" style={{background:'#B5673A'}}>Commander · paiement à la livraison</button></div>
     </aside>
-    <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-full bg-ink text-white text-sm font-semibold transition-all ${toast?'translate-y-0 opacity-100':'translate-y-24 opacity-0'}`}>{toast}</div>
+    <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] px-5 py-3 rounded-full bg-ink text-white text-sm font-semibold transition-all ${toast?'translate-y-0 opacity-100':'translate-y-24 opacity-0'}`}>{toast}</div>
   </div>)
 }
 
-function ProductCard({p,onAdd}){
+function Chip({active,onClick,children}){
+  return <button onClick={onClick} className={`text-sm font-semibold px-4 py-2 rounded-full border transition ${active?'text-white':'text-muted border-line bg-white hover:border-caramel'}`} style={active?{background:'#B5673A',borderColor:'#B5673A'}:{}}>{children}</button>
+}
+
+function ProductCard({p,onAdd,onOpen}){
   const [size,setSize]=useState('250g')
   return (<motion.div initial={{opacity:0,y:16}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="card overflow-hidden flex flex-col hover:shadow-xl transition">
-    <div className="aspect-[5/3] relative overflow-hidden"><img src={p.img} alt={p.name} loading="lazy" className="w-full h-full object-cover"/>
-      <span className="absolute top-3 left-3 text-[11px] font-bold px-2.5 py-1 rounded-full text-white" style={{background:p.accent}}>{p.best?'★ Best-seller':p.premium?'Premium':p.tag}</span></div>
+    <button onClick={onOpen} className="aspect-[5/3] relative overflow-hidden text-left group">
+      <img src={p.img} alt={p.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition duration-500"/>
+      <span className="absolute top-3 left-3 text-[11px] font-bold px-2.5 py-1 rounded-full text-white" style={{background:p.accent}}>{p.best?'★ Best-seller':p.premium?'Premium':p.tag}</span>
+      <span className="absolute bottom-3 right-3 text-[11px] font-semibold px-2 py-1 rounded-full bg-white/90 backdrop-blur flex items-center gap-1" style={{color:'#7a5a18'}}><Star size={11} fill="#E8A93B" stroke="#E8A93B"/> {p.rating.toFixed(1)}</span>
+    </button>
     <div className="p-5 flex flex-col gap-1 flex-1">
       <div className="serif text-lg" style={{color:p.accent}}>{p.ar}</div>
-      <h3 className="serif text-xl font-bold leading-tight">{p.name}</h3>
+      <button onClick={onOpen} className="text-left"><h3 className="serif text-xl font-bold leading-tight hover:underline">{p.name}</h3></button>
       <div className="text-sm text-muted">{p.profile} · {p.roast}</div>
+      <div className="flex items-center gap-2 mt-0.5"><Stars value={p.rating} size={13}/><span className="text-xs text-muted">{p.rating.toFixed(1)} · {p.reviews} avis</span></div>
       <p className="text-xs text-muted mt-1 line-clamp-2">{p.desc}</p>
       <div className="flex gap-1.5 mt-3">{SIZES.map(s=><button key={s} onClick={()=>setSize(s)} className={`flex-1 rounded-lg py-1.5 text-xs font-semibold border ${size===s?'text-white':'text-muted border-line'}`} style={size===s?{background:'#2A211B',borderColor:'#2A211B'}:{}}>{s}</button>)}</div>
       <div className="flex items-center justify-between mt-auto pt-3"><div className="serif text-xl font-bold">{p.prices[size]} <span className="text-xs text-muted">{CUR}</span></div>
         <button onClick={()=>onAdd(p,size)} className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold text-white" style={{background:p.accent}}><Plus size={15}/> Ajouter</button></div>
     </div>
   </motion.div>)
+}
+
+function ProductDetail({p,onClose,onAdd}){
+  const [size,setSize]=useState('250g'); const [qty,setQty]=useState(1)
+  useEffect(()=>{const h=e=>e.key==='Escape'&&onClose();window.addEventListener('keydown',h);document.body.style.overflow='hidden';return()=>{window.removeEventListener('keydown',h);document.body.style.overflow=''}},[onClose])
+  return (<>
+    <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} onClick={onClose} className="fixed inset-0 z-[70] bg-ink/50 backdrop-blur-sm"/>
+    <motion.div initial={{opacity:0,y:30,scale:.97}} animate={{opacity:1,y:0,scale:1}} exit={{opacity:0,y:20,scale:.98}} className="fixed inset-0 z-[71] grid place-items-center p-4 pointer-events-none">
+      <div className="card overflow-hidden w-full max-w-[860px] max-h-[92vh] overflow-y-auto thin pointer-events-auto grid md:grid-cols-2">
+        <div className="relative">
+          <img src={p.img} alt={p.name} className="w-full h-56 md:h-full object-cover"/>
+          <span className="absolute top-3 left-3 text-[11px] font-bold px-2.5 py-1 rounded-full text-white" style={{background:p.accent}}>{p.best?'★ Best-seller':p.premium?'Premium':p.tag}</span>
+        </div>
+        <div className="p-6 md:p-7 relative">
+          <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 grid place-items-center rounded-full bg-cream text-muted hover:text-ink"><X size={18}/></button>
+          <div className="serif text-lg" style={{color:p.accent}}>{p.ar}</div>
+          <h2 className="serif text-3xl font-extrabold leading-tight">{p.name}</h2>
+          <div className="flex items-center gap-2 mt-1.5"><Stars value={p.rating} size={15}/><span className="text-sm"><b>{p.rating.toFixed(1)}</b> <span className="text-muted">· {p.reviews} avis</span></span></div>
+          <p className="text-sm text-muted mt-3">{p.desc}</p>
+
+          <div className="flex flex-wrap gap-x-6 gap-y-2 mt-4 text-sm">
+            <div><div className="text-[11px] uppercase tracking-wide text-muted font-semibold">Profil</div><div className="font-semibold">{p.profile}</div></div>
+            <div><div className="text-[11px] uppercase tracking-wide text-muted font-semibold">Torréfaction</div><div className="font-semibold">{p.roast}</div></div>
+            <div><div className="text-[11px] uppercase tracking-wide text-muted font-semibold">Intensité</div><Intensity value={p.intensity}/></div>
+          </div>
+
+          <div className="mt-4"><div className="text-[11px] uppercase tracking-wide text-muted font-semibold mb-1.5">Ingrédients</div>
+            <div className="flex flex-wrap gap-1.5">{p.ingredients.map(g=><span key={g} className="text-xs px-2.5 py-1 rounded-full" style={{background:'#F6EAE0',color:'#8C5A33'}}>{g}</span>)}</div></div>
+
+          <div className="mt-5"><div className="text-[11px] uppercase tracking-wide text-muted font-semibold mb-1.5">Format</div>
+            <div className="flex gap-2">{SIZES.map(s=><button key={s} onClick={()=>setSize(s)} className={`flex-1 rounded-xl py-2 text-sm font-semibold border ${size===s?'text-white':'text-muted border-line'}`} style={size===s?{background:'#2A211B',borderColor:'#2A211B'}:{}}>{s}<div className="text-[11px] font-normal opacity-80">{p.prices[s]} {CUR}</div></button>)}</div></div>
+
+          <div className="flex items-center justify-between mt-5">
+            <div className="flex items-center gap-3"><span className="text-[11px] uppercase tracking-wide text-muted font-semibold">Quantité</span>
+              <div className="flex items-center gap-2"><button onClick={()=>setQty(q=>Math.max(1,q-1))} className="w-8 h-8 rounded-lg border border-line grid place-items-center"><Minus size={14}/></button><span className="w-6 text-center font-semibold">{qty}</span><button onClick={()=>setQty(q=>q+1)} className="w-8 h-8 rounded-lg border border-line grid place-items-center"><Plus size={14}/></button></div></div>
+            <div className="serif text-2xl font-extrabold" style={{color:'#B5673A'}}>{p.prices[size]*qty} {CUR}</div>
+          </div>
+
+          <button onClick={()=>{onAdd(p,size,qty);onClose()}} className="w-full rounded-full py-3.5 mt-5 font-semibold text-white inline-flex items-center justify-center gap-2" style={{background:'#B5673A'}}><Plus size={17}/> Ajouter au panier</button>
+        </div>
+      </div>
+    </motion.div>
+  </>)
 }

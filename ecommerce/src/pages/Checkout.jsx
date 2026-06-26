@@ -4,6 +4,7 @@ import { ArrowLeft, Wallet, Truck, ShieldCheck, CalendarCheck } from 'lucide-rea
 import { loadCart, saveCart, addOrder } from '../store.js'
 import { GOUVERNORATS, CITIES, CUR, DELIVERY, PRODUCTS } from '../data.js'
 import { ProductImg } from '../marks.jsx'
+import { Sparkles } from 'lucide-react'
 import toast from 'react-hot-toast'
 const etaDate=()=> new Date(Date.now()+3*86400000).toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})
 export default function Checkout(){
@@ -38,7 +39,7 @@ export default function Checkout(){
       </div>
       <div className="card p-6 h-fit">
         <h3 className="serif text-lg font-bold mb-3">Votre commande</h3>
-        <div className="space-y-3">{cart.map(i=>{const p=PRODUCTS.find(x=>x.id===i.id);return(<div key={i.key} className="flex items-center gap-2 text-sm"><ProductImg p={p} size={36} radius={10}/><span className="flex-1 text-muted">{i.name} <b className="text-ink">×{i.qty}</b> <span className="text-xs">({i.size})</span></span><span className="font-semibold">{i.price*i.qty} {CUR}</span></div>)})}</div>
+        <div className="space-y-3">{cart.map(i=>{const p=PRODUCTS.find(x=>x.id===i.id);return(<div key={i.key} className="flex items-center gap-2 text-sm">{i.bundle?<span className="w-9 h-9 rounded-[10px] grid place-items-center text-white shrink-0" style={{background:'#B5673A'}}><Sparkles size={16}/></span>:<ProductImg p={p} size={36} radius={10}/>}<span className="flex-1 text-muted">{i.name} <b className="text-ink">×{i.qty}</b> <span className="text-xs">({i.size})</span></span><span className="font-semibold">{i.price*i.qty} {CUR}</span></div>)})}</div>
         <div className="border-t border-line mt-3 pt-3 space-y-1 text-sm">
           <div className="flex justify-between text-muted"><span>Sous-total</span><span>{sub} {CUR}</span></div>
           <div className="flex justify-between text-muted"><span>Livraison</span><span>{fee===0?'Gratuite ✓':fee+' '+CUR}</span></div>

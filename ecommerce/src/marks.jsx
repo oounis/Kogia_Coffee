@@ -26,3 +26,26 @@ function shade(hex,p){ const n=parseInt(hex.slice(1),16); let r=(n>>16)+p,g=((n>
 export function ProductImg({ p, size=96, radius=20 }){
   return <img src={p.img} alt={p.name} loading="lazy" className="block object-cover" style={{width:size,height:size,borderRadius:radius}}/>
 }
+// Étoiles de notation (statique, partielle selon la note)
+export function Stars({ value=5, size=14 }){
+  const full=Math.floor(value), frac=value-full
+  return (<span className="inline-flex items-center" style={{lineHeight:0}} aria-label={value+" sur 5"}>
+    {[0,1,2,3,4].map(i=>{
+      const fill=i<full?1:(i===full?frac:0)
+      return (<svg key={i} width={size} height={size} viewBox="0 0 20 20" style={{display:'block'}}>
+        <defs><linearGradient id={`st${i}_${size}`}><stop offset={fill*100+'%'} stopColor="#E8A93B"/><stop offset={fill*100+'%'} stopColor="#E5DCD2"/></linearGradient></defs>
+        <path d="M10 1.6l2.47 5.01 5.53.8-4 3.9.94 5.5L10 15.9 5.06 18.3l.94-5.5-4-3.9 5.53-.8z" fill={`url(#st${i}_${size})`}/>
+      </svg>)
+    })}
+  </span>)
+}
+// Niveau d'intensité (grains pleins / vides)
+export function Intensity({ value=3, max=5, size=10 }){
+  return (<span className="inline-flex items-center gap-0.5" aria-label={`Intensité ${value} sur ${max}`}>
+    {Array.from({length:max}).map((_,i)=>(
+      <svg key={i} width={size} height={size+3} viewBox="0 0 14 18">
+        <ellipse cx="7" cy="9" rx="6" ry="8" fill={i<value?"#6B4226":"#E5DCD2"}/>
+        <path d="M4 3 q3 6 6 12" stroke={i<value?"#FBF8F4":"#fff"} strokeWidth="1.4" fill="none" opacity={i<value?.6:.9}/>
+      </svg>))}
+  </span>)
+}
