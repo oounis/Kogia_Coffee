@@ -2,13 +2,26 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { loadOrders, updateOrder } from '../store.js'
 import { CUR } from '../data.js'
-import { Package, Wallet, Clock, ArrowLeft, TrendingUp, Repeat, Crown } from 'lucide-react'
+import { Package, Wallet, Clock, ArrowLeft, TrendingUp, Repeat, Crown, Download, Search, LogOut } from 'lucide-react'
 import { BarChart, Bar, PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts'
 const NEXT={'En attente':'Confirmée','Confirmée':'En livraison','En livraison':'Livrée','Livrée':'Livrée'}
 const COL={'En attente':'#E59A12','Confirmée':'#36C5F0','En livraison':'#7C3AED','Livrée':'#10B981'}
 const STATUSES=['En attente','Confirmée','En livraison','Livrée']
+
+// Export CSV des commandes (séparateur ';' + BOM UTF-8 → s'ouvre proprement dans Excel FR, accents inclus)
+function exportCSV(orders){
+  const esc=v=>{const s=String(v??'');return /[";\n\r]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}
+  const head=['Commande','Date','Statut','Type','Client','Téléphone','Gouvernorat','Ville','Adresse','Notes','Articles','Sous-total','Remise','Code promo','Livraison','Total','Paiement']
+  const rows=orders.map(o=>[o.id,new Date(o.at).toLocaleString('fr-FR'),o.status,o.type,o.customer.name,o.customer.phone,o.customer.gov,o.customer.city,o.customer.address,o.customer.notes||'',o.items.map(i=>`${i.name} x${i.qty} (${i.size})`).join(' | '),o.subtotal,o.discount||0,o.promoCode||'',o.deliveryFee,o.total,o.payment])
+  const csv=[head,...rows].map(r=>r.map(esc).join(';')).join('\r\n')
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'})
+  const url=URL.createObjectURL(blob); const a=document.createElement('a')
+  a.href=url; a.download=`kogia-commandes-${new Date().toISOString().slice(0,10)}.csv`; a.click()
+  URL.revokeObjectURL(url)
+}
 export default function Orders(){
   const nav=useNavigate(); const [auth,setAuth]=useState(sessionStorage.getItem('kc_admin')==='1'); const [pw,setPw]=useState(''); const [,f]=useState(0)
+  const [oq,setOq]=useState(''); const [sf,setSf]=useState('all')
   if(!auth) return (<div className="bg-ambient min-h-screen grid place-items-center p-6"><div className="card p-8 max-w-sm w-full text-center">
     <div className="text-4xl mb-2">☕</div><h2 className="serif text-xl font-bold">Espace gérant</h2><p className="text-muted text-sm mb-4">Kogia Coffee — commandes</p>
     <input type="password" value={pw} onChange={e=>setPw(e.target.value)} onKeyDown={e=>e.key==='Enter'&&(pw==='kogia'?(sessionStorage.setItem('kc_admin','1'),setAuth(true)):null)} placeholder="Code" className="w-full text-center tracking-widest rounded-xl border border-line px-3 py-3 mb-3"/>
@@ -30,8 +43,24 @@ export default function Orders(){
   const topBlends=Object.entries(tally).map(([name,qty])=>({name,qty})).sort((a,b)=>b.qty-a.qty).slice(0,5)
   const topName=topBlends[0]?.name
 
+  // Recherche + filtre par statut (sur la liste uniquement ; KPI/graphiques restent globaux)
+  const q=oq.trim().toLowerCase()
+  const shown=orders.filter(o=>(sf==='all'||o.status===sf)&&(!q
+    ||o.id.toLowerCase().includes(q)
+    ||o.customer.name.toLowerCase().includes(q)
+    ||(o.customer.phone||'').includes(q)
+    ||o.customer.city.toLowerCase().includes(q)
+    ||o.customer.gov.toLowerCase().includes(q)))
+  const logout=()=>{sessionStorage.removeItem('kc_admin');setAuth(false)}
+
   return (<div className="bg-ambient min-h-screen"><div className="mx-auto w-[92vw] max-w-[1000px] py-8">
-    <button onClick={()=>nav('/')} className="inline-flex items-center gap-1.5 text-sm text-muted mb-4"><ArrowLeft size={16}/> Boutique</button>
+    <div className="flex items-center justify-between gap-3 mb-4">
+      <button onClick={()=>nav('/')} className="inline-flex items-center gap-1.5 text-sm text-muted"><ArrowLeft size={16}/> Boutique</button>
+      <div className="flex items-center gap-2">
+        <button onClick={()=>exportCSV(orders)} disabled={!orders.length} className="inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-full text-white disabled:opacity-40" style={{background:'#2A211B'}}><Download size={14}/> Exporter CSV</button>
+        <button onClick={logout} className="inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-full border border-line bg-white text-muted hover:text-ink"><LogOut size={14}/> Quitter</button>
+      </div>
+    </div>
     <h1 className="serif text-3xl font-extrabold mb-5">Tableau de bord</h1>
 
     {/* KPI */}
@@ -75,9 +104,16 @@ export default function Orders(){
       </div>
     </div>}
 
-    <h2 className="serif text-xl font-bold mb-3">Commandes</h2>
+    <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
+      <h2 className="serif text-xl font-bold">Commandes {orders.length>0&&<span className="text-sm font-normal text-muted">· {shown.length}/{orders.length}</span>}</h2>
+      {orders.length>0&&<div className="flex items-center gap-2 flex-wrap">
+        <div className="relative"><Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted"/><input value={oq} onChange={e=>setOq(e.target.value)} placeholder="N°, nom, ville, tél…" className="rounded-full border border-line bg-white pl-9 pr-3 py-1.5 text-sm w-[200px]"/></div>
+        <select value={sf} onChange={e=>setSf(e.target.value)} className="rounded-full border border-line bg-white px-3 py-1.5 text-sm"><option value="all">Tous statuts</option>{STATUSES.map(s=><option key={s} value={s}>{s}</option>)}</select>
+      </div>}
+    </div>
     {orders.length===0? <div className="card p-10 text-center text-muted">Aucune commande pour le moment.</div>
-     : <div className="space-y-3">{orders.map(o=>(<div key={o.id} className="card p-4">
+     : shown.length===0? <div className="card p-10 text-center text-muted">Aucune commande ne correspond. <button onClick={()=>{setOq('');setSf('all')}} className="underline" style={{color:'#B5673A'}}>Réinitialiser</button></div>
+     : <div className="space-y-3">{shown.map(o=>(<div key={o.id} className="card p-4">
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div><div className="font-bold flex items-center gap-2">{o.id} <span className="text-xs font-bold px-2 py-0.5 rounded-full text-white" style={{background:COL[o.status]}}>{o.status}</span>{o.type==='Abonnement'&&<span className="text-[11px] font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1" style={{background:'#F6EAE0',color:'#B5673A'}}><Repeat size={10}/> Abonnement</span>}</div>
             <div className="text-sm text-muted">{o.customer.name} · {o.customer.phone} · {o.customer.city}, {o.customer.gov}</div>

@@ -13,7 +13,9 @@ export default function Checkout(){
   const [code,setCode]=useState(''); const [promo,setPromo]=useState(null)
   const sub=cart.reduce((s,i)=>s+i.price*i.qty,0)
   const discount=promo?promo.discount:0
-  const fee=(sub-discount)>=DELIVERY.freeOver?0:DELIVERY.fee; const total=sub-discount+fee
+  // Livraison gratuite calculée sur le sous-total AVANT remise (cohérent avec le panier) :
+  // un code promo ne doit jamais retirer la livraison gratuite déjà annoncée.
+  const fee=sub>=DELIVERY.freeOver?0:DELIVERY.fee; const total=sub-discount+fee
   const hasSub=cart.some(i=>i.sub)
   if(cart.length===0) return <Empty nav={nav}/>
   const setGov=g=>setF({...f,gov:g,city:(CITIES[g]||[g])[0]})

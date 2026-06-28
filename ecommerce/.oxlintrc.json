@@ -1,0 +1,9 @@
+{
+  "ignorePatterns": ["dist", "node_modules", "public"],
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {
+    "no-unused-vars": "warn"
+  }
+}

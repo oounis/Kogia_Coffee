@@ -1,3 +1,4 @@
+import { useId } from 'react'
 // Logo Kogia (queue de baleine) + identité simple par mélange
 export function KogiaMark({ size=34, c1="#8C4A2F", c2="#C0743C" }){
   return (<svg viewBox="0 0 68 72" width={size} height={size} aria-hidden="true">
@@ -29,12 +30,16 @@ export function ProductImg({ p, size=96, radius=20 }){
 // Étoiles de notation (statique, partielle selon la note)
 export function Stars({ value=5, size=14 }){
   const full=Math.floor(value), frac=value-full
+  // useId garantit des identifiants de dégradé uniques par instance — sinon les
+  // étoiles partielles de notes différentes (même taille) entrent en collision (ids SVG globaux).
+  const uid=useId().replace(/:/g,'')
   return (<span className="inline-flex items-center" style={{lineHeight:0}} aria-label={value+" sur 5"}>
     {[0,1,2,3,4].map(i=>{
       const fill=i<full?1:(i===full?frac:0)
+      const gid=`st${i}_${uid}`
       return (<svg key={i} width={size} height={size} viewBox="0 0 20 20" style={{display:'block'}}>
-        <defs><linearGradient id={`st${i}_${size}`}><stop offset={fill*100+'%'} stopColor="#E8A93B"/><stop offset={fill*100+'%'} stopColor="#E5DCD2"/></linearGradient></defs>
-        <path d="M10 1.6l2.47 5.01 5.53.8-4 3.9.94 5.5L10 15.9 5.06 18.3l.94-5.5-4-3.9 5.53-.8z" fill={`url(#st${i}_${size})`}/>
+        <defs><linearGradient id={gid}><stop offset={fill*100+'%'} stopColor="#E8A93B"/><stop offset={fill*100+'%'} stopColor="#E5DCD2"/></linearGradient></defs>
+        <path d="M10 1.6l2.47 5.01 5.53.8-4 3.9.94 5.5L10 15.9 5.06 18.3l.94-5.5-4-3.9 5.53-.8z" fill={`url(#${gid})`}/>
       </svg>)
     })}
   </span>)
