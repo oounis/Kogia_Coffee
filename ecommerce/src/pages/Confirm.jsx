@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom'
-import { CheckCircle2, Wallet, MapPin, CalendarCheck, MessageCircle, Sparkles, Gift, Repeat, PackageSearch } from 'lucide-react'
+import { CheckCircle2, Wallet, MapPin, CalendarCheck, MessageCircle, Repeat, PackageSearch } from 'lucide-react'
 import { loadOrders } from '../store.js'
-import { CUR, PRODUCTS, WHATSAPP } from '../data.js'
+import { CUR, WHATSAPP } from '../data.js'
 import { ProductImg } from '../marks.jsx'
 export default function Confirm(){
   const {id}=useParams(); const nav=useNavigate(); const o=loadOrders().find(x=>x.id===id)
@@ -22,7 +22,7 @@ export default function Confirm(){
       {o.eta&&<div className="text-sm text-muted mt-2 flex items-center gap-2"><CalendarCheck size={15}/> Livraison estimée : <b className="text-ink">{o.eta}</b></div>}
     </div>
     {o.type==='Abonnement'&&<div className="mt-4 text-left text-sm flex items-start gap-2 rounded-xl p-3" style={{background:'#F6EAE0',color:'#8C5A33'}}><Repeat size={15} className="mt-0.5 shrink-0"/> Votre <b>abonnement</b> est actif. Vous serez livré automatiquement à la fréquence choisie, et payez à chaque livraison. Annulable à tout moment.</div>}
-    <div className="mt-4 text-left text-sm space-y-2">{o.items.map(i=>{const p=PRODUCTS.find(x=>x.id===i.id);return(<div key={i.key} className="flex items-center gap-2">{i.bundle?<span className="w-[30px] h-[30px] rounded-[9px] grid place-items-center text-white shrink-0" style={{background:'#B5673A'}}><Sparkles size={14}/></span>:i.gift?<span className="w-[30px] h-[30px] rounded-[9px] grid place-items-center text-white shrink-0" style={{background:'#9C5630'}}><Gift size={14}/></span>:<ProductImg p={p} size={30} radius={9}/>}<span className="flex-1 text-muted">{i.name} ×{i.qty} ({i.size})</span><span>{i.price*i.qty} {CUR}</span></div>)})}
+    <div className="mt-4 text-left text-sm space-y-2">{o.items.map(i=>(<div key={i.key} className="flex items-center gap-2"><ProductImg p={i} size={30} radius={9}/><span className="flex-1 text-muted">{i.name} ×{i.qty} ({i.size})</span><span>{i.price*i.qty} {CUR}</span></div>))}
       {o.discount>0&&<div className="flex justify-between pt-1 border-t border-line/60" style={{color:'#10B981'}}><span>Remise ({o.promoCode})</span><span>−{o.discount} {CUR}</span></div>}
       <div className={`flex justify-between text-muted ${o.discount>0?'':'pt-1 border-t border-line/60'}`}><span>Livraison</span><span>{o.deliveryFee===0?'Gratuite':o.deliveryFee+' '+CUR}</span></div></div>
 

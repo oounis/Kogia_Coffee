@@ -1,4 +1,5 @@
 import { useId } from 'react'
+import { Atmosphere } from './atmo.jsx'
 // Logo Kogia (queue de baleine) + identité simple par mélange
 export function KogiaMark({ size=34, c1="#8C4A2F", c2="#C0743C" }){
   return (<svg viewBox="0 0 68 72" width={size} height={size} aria-hidden="true">
@@ -25,7 +26,7 @@ export function BlendMark({ p, size=96 }){
 function shade(hex,p){ const n=parseInt(hex.slice(1),16); let r=(n>>16)+p,g=((n>>8)&255)+p,b=(n&255)+p
   r=Math.max(0,Math.min(255,r));g=Math.max(0,Math.min(255,g));b=Math.max(0,Math.min(255,b)); return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1) }
 export function ProductImg({ p, size=96, radius=20 }){
-  return <img src={p.img} alt={p.name} loading="lazy" className="block object-cover" style={{width:size,height:size,borderRadius:radius}}/>
+  return <Atmosphere accent={p?.accent||'#B5673A'} icon={p?.icon||'coffee'} size={size} radius={radius}/>
 }
 // Étoiles de notation (statique, partielle selon la note)
 export function Stars({ value=5, size=14 }){

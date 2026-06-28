@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ShoppingBag, Plus, Minus, X, Coffee, Truck, Leaf, ArrowRight, Wallet, ShieldCheck, Search, Sparkles, Star, Repeat, Gift, Quote, Mail, Crown, Check } from 'lucide-react'
-import { PRODUCTS, SIZES, CUR, DELIVERY, PROFILS, BUNDLE, GIFTS, SUBSCRIPTION, FEATURED, REVIEWS, productById } from '../data.js'
+import { ShoppingBag, Plus, Minus, X, Coffee, Truck, Leaf, ArrowRight, Wallet, ShieldCheck, Search, Sparkles, Star, Repeat, Gift, Quote, Mail, Crown, Check, CupSoda, Hand } from 'lucide-react'
+import { PRODUCTS, MUGS, ACCESSORIES, SIZES, CUR, DELIVERY, PROFILS, BUNDLE, GIFTS, SUBSCRIPTION, FEATURED, REVIEWS, productById } from '../data.js'
 import { KogiaMark, ProductImg, Stars, Intensity } from '../marks.jsx'
+import { CardArt } from '../atmo.jsx'
 import { loadCart, saveCart, addNewsletter } from '../store.js'
 import toast from 'react-hot-toast'
 
@@ -14,16 +15,17 @@ export default function Store(){
   const [query,setQuery]=useState(''); const [filter,setFilter]=useState('all')
   useEffect(()=>saveCart(cart),[cart])
   const note=m=>{setToastMsg(m);clearTimeout(window.__t);window.__t=setTimeout(()=>setToastMsg(''),1800)}
-  const add=(p,size,qty=1)=>{const key=`${p.id}_${size}`;setCart(c=>{const e=c.find(i=>i.key===key);return e?c.map(i=>i.key===key?{...i,qty:i.qty+qty}:i):[...c,{key,id:p.id,size,name:p.name,price:p.prices[size],qty}]});note(`${p.name} (${size}) ajouté ✓`)}
-  const addBundle=()=>{const key='bundle_'+BUNDLE.id;setCart(c=>{const e=c.find(i=>i.key===key);return e?c.map(i=>i.key===key?{...i,qty:i.qty+1}:i):[...c,{key,id:BUNDLE.id,bundle:true,size:'Pack',name:BUNDLE.name,price:BUNDLE.price,qty:1}]});note('Pack Découverte ajouté ✓')}
-  const addGift=g=>{const key='gift_'+g.id;setCart(c=>{const e=c.find(i=>i.key===key);return e?c.map(i=>i.key===key?{...i,qty:i.qty+1}:i):[...c,{key,id:g.id,gift:true,size:'Coffret',name:g.name,price:g.price,qty:1}]});note(`${g.name} ajouté ✓`)}
-  const addSub=(p,freq)=>{const price=Math.round(p.prices[SUBSCRIPTION.size]*(1-SUBSCRIPTION.discount));const key=`sub_${p.id}_${freq.id}`;setCart(c=>{const e=c.find(i=>i.key===key);return e?c.map(i=>i.key===key?{...i,qty:i.qty+1}:i):[...c,{key,id:p.id,sub:true,freq:freq.id,freqLabel:freq.sub,size:SUBSCRIPTION.size,name:`${p.name} · Abonnement`,price,qty:1}]});note(`Abonnement ${p.name} ajouté ✓`)}
+  const add=(p,size,qty=1)=>{const key=`${p.id}_${size}`;setCart(c=>{const e=c.find(i=>i.key===key);return e?c.map(i=>i.key===key?{...i,qty:i.qty+qty}:i):[...c,{key,id:p.id,size,name:p.name,price:p.prices[size],qty,accent:p.accent,icon:p.icon}]});note(`${p.name} (${size}) ajouté ✓`)}
+  const addBundle=()=>{const key='bundle_'+BUNDLE.id;setCart(c=>{const e=c.find(i=>i.key===key);return e?c.map(i=>i.key===key?{...i,qty:i.qty+1}:i):[...c,{key,id:BUNDLE.id,bundle:true,size:'Pack',name:BUNDLE.name,price:BUNDLE.price,qty:1,accent:BUNDLE.accent||'#B5673A',icon:'sparkles'}]});note('Pack Découverte ajouté ✓')}
+  const addGift=g=>{const key='gift_'+g.id;setCart(c=>{const e=c.find(i=>i.key===key);return e?c.map(i=>i.key===key?{...i,qty:i.qty+1}:i):[...c,{key,id:g.id,gift:true,size:'Coffret',name:g.name,price:g.price,qty:1,accent:g.accent,icon:'gift'}]});note(`${g.name} ajouté ✓`)}
+  const addSub=(p,freq)=>{const price=Math.round(p.prices[SUBSCRIPTION.size]*(1-SUBSCRIPTION.discount));const key=`sub_${p.id}_${freq.id}`;setCart(c=>{const e=c.find(i=>i.key===key);return e?c.map(i=>i.key===key?{...i,qty:i.qty+1}:i):[...c,{key,id:p.id,sub:true,freq:freq.id,freqLabel:freq.sub,size:SUBSCRIPTION.size,name:`${p.name} · Abonnement`,price,qty:1,accent:p.accent,icon:p.icon}]});note(`Abonnement ${p.name} ajouté ✓`)}
+  const addShop=it=>{const key=`${it.kind}_${it.id}`;setCart(c=>{const e=c.find(i=>i.key===key);return e?c.map(i=>i.key===key?{...i,qty:i.qty+1}:i):[...c,{key,id:it.id,kind:it.kind,size:it.material||(it.kind==='mug'?'Mug':'Pièce'),name:it.name,price:it.price,qty:1,accent:it.accent,icon:it.icon}]});note(`${it.name} ajouté ✓`)}
   const chg=(key,d)=>setCart(c=>c.map(i=>i.key===key?{...i,qty:i.qty+d}:i).filter(i=>i.qty>0))
   const count=cart.reduce((s,i)=>s+i.qty,0), sub=cart.reduce((s,i)=>s+i.price*i.qty,0)
   const fee=sub>=DELIVERY.freeOver||sub===0?0:DELIVERY.fee, total=sub+fee
   const best=PRODUCTS.find(p=>p.best)
   const featured=productById(FEATURED.id)
-  const cartIcon=i=>i.bundle?<div className="w-[46px] h-[46px] rounded-xl grid place-items-center text-white shrink-0" style={{background:'#B5673A'}}><Sparkles size={20}/></div>:i.gift?<div className="w-[46px] h-[46px] rounded-xl grid place-items-center text-white shrink-0" style={{background:'#9C5630'}}><Gift size={20}/></div>:i.sub?<div className="relative shrink-0"><ProductImg p={productById(i.id)} size={46} radius={12}/><span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full grid place-items-center text-white border-2 border-cream" style={{background:'#B5673A'}}><Repeat size={11}/></span></div>:<ProductImg p={productById(i.id)} size={46} radius={12}/>
+  const cartIcon=i=>i.sub?<div className="relative shrink-0"><ProductImg p={i} size={46} radius={12}/><span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full grid place-items-center text-white border-2 border-cream" style={{background:'#B5673A'}}><Repeat size={11}/></span></div>:<ProductImg p={i} size={46} radius={12}/>
 
   const q=query.trim().toLowerCase()
   const list=PRODUCTS.filter(p=>(filter==='all'||p.cat===filter)&&(!q||p.name.toLowerCase().includes(q)||p.desc.toLowerCase().includes(q)||p.profile.toLowerCase().includes(q)))
@@ -32,7 +34,7 @@ export default function Store(){
     <header className="sticky top-0 z-30 backdrop-blur bg-cream/80 border-b border-line">
       <div className="mx-auto w-[92vw] max-w-[1120px] flex items-center justify-between py-3">
         <a href="#" className="flex items-center gap-2"><KogiaMark size={34}/><div><div className="serif font-extrabold leading-none text-lg">Kogia Coffee</div><div className="text-[10px] text-muted">par Kogia Business</div></div></a>
-        <nav className="hidden md:flex gap-6 text-sm text-muted font-medium"><a href="#produits" className="hover:text-caramel">Nos cafés</a><a href="#abonnement" className="hover:text-caramel">Abonnement</a><a href="#coffrets" className="hover:text-caramel">Coffrets</a><a href="#avis" className="hover:text-caramel">Avis</a><a href="#/suivi" className="hover:text-caramel">Suivi</a></nav>
+        <nav className="hidden md:flex gap-5 text-sm text-muted font-medium"><a href="#produits" className="hover:text-caramel">Nos cafés</a><a href="#mugs" className="hover:text-caramel">Mugs</a><a href="#accessoires" className="hover:text-caramel">Accessoires</a><a href="#abonnement" className="hover:text-caramel">Abonnement</a><a href="#coffrets" className="hover:text-caramel">Coffrets</a><a href="#/suivi" className="hover:text-caramel">Suivi</a></nav>
         <button onClick={()=>setOpen(true)} className="relative inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-white" style={{background:'#B5673A'}}><ShoppingBag size={16}/> Panier{count>0&&<span className="absolute -top-1.5 -right-1.5 min-w-5 h-5 px-1 grid place-items-center rounded-full text-[11px] bg-ink text-white">{count}</span>}</button>
       </div>
     </header>
@@ -174,14 +176,25 @@ export default function Store(){
       </div>
     </section>
 
-    <section id="packaging" className="bg-white border-t border-line py-16"><div className="mx-auto w-[92vw] max-w-[1120px]">
-      <div className="text-center max-w-[60ch] mx-auto mb-9"><div className="text-xs font-bold uppercase tracking-widest" style={{color:'#B5673A'}}>Notre packaging</div>
-        <h2 className="serif text-4xl font-extrabold mt-2">Chaque mélange, son étiquette</h2>
-        <p className="text-muted mt-2">Des étiquettes dessinées sur mesure — nom français, nom arabe et origine de chaque café.</p></div>
-      <div className="flex gap-5 overflow-x-auto thin pb-4 snap-x">
-        {PRODUCTS.map(p=>(<img key={p.id} src={p.label} alt={`Étiquette ${p.name}`} loading="lazy" className="w-[210px] shrink-0 rounded-2xl shadow-lg snap-center hover:-translate-y-1 transition"/>))}
+    {/* Tasses & Mugs */}
+    <section id="mugs" className="bg-white border-t border-line py-16"><div className="mx-auto w-[92vw] max-w-[1120px]">
+      <div className="text-center max-w-[62ch] mx-auto mb-8">
+        <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest" style={{color:'#B5673A'}}><CupSoda size={14}/> Tasses & Mugs</div>
+        <h2 className="serif text-4xl font-extrabold mt-2">Le mug Kogia, fait main</h2>
+        <p className="text-muted mt-2">Des tasses en céramique émaillées à la main, à l'effigie de la baleine Kogia. Chaque pièce est unique.</p>
       </div>
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">{MUGS.map(m=><ShopCard key={m.id} it={m} onAdd={addShop}/>)}</div>
     </div></section>
+
+    {/* Accessoires artisanaux */}
+    <section id="accessoires" className="mx-auto w-[92vw] max-w-[1120px] py-16">
+      <div className="text-center max-w-[62ch] mx-auto mb-8">
+        <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest" style={{color:'#B5673A'}}><Hand size={14}/> Accessoires artisanaux</div>
+        <h2 className="serif text-4xl font-extrabold mt-2">L'art du café, fait main</h2>
+        <p className="text-muted mt-2">Dallah en cuivre, finjans, bois d'olivier de Djerba… des objets authentiques, façonnés par des artisans tunisiens.</p>
+      </div>
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">{ACCESSORIES.map(a=><ShopCard key={a.id} it={a} onAdd={addShop}/>)}</div>
+    </section>
 
     {/* Newsletter */}
     <section className="mx-auto w-[92vw] max-w-[1120px] py-16">
@@ -241,8 +254,8 @@ function ProductCard({p,onAdd,onOpen}){
   const [size,setSize]=useState('250g')
   return (<motion.div initial={{opacity:0,y:16}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="card overflow-hidden flex flex-col hover:shadow-xl transition">
     <button onClick={onOpen} className="aspect-[5/3] relative overflow-hidden text-left group">
-      <img src={p.img} alt={p.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition duration-500"/>
-      <span className="absolute top-3 left-3 text-[11px] font-bold px-2.5 py-1 rounded-full text-white" style={{background:p.accent}}>{p.best?'★ Best-seller':p.premium?'Premium':p.tag}</span>
+      <CardArt accent={p.accent} icon={p.icon} ar={p.ar} className="absolute inset-0 group-hover:scale-[1.04] transition duration-500"/>
+      <span className="absolute top-3 left-3 text-[11px] font-bold px-2.5 py-1 rounded-full text-white shadow-sm" style={{background:p.accent}}>{p.best?'★ Best-seller':p.premium?'Premium':p.tag}</span>
       <span className="absolute bottom-3 right-3 text-[11px] font-semibold px-2 py-1 rounded-full bg-white/90 backdrop-blur flex items-center gap-1" style={{color:'#7a5a18'}}><Star size={11} fill="#E8A93B" stroke="#E8A93B"/> {p.rating.toFixed(1)}</span>
     </button>
     <div className="p-5 flex flex-col gap-1 flex-1">
@@ -265,9 +278,9 @@ function ProductDetail({p,onClose,onAdd}){
     <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} onClick={onClose} className="fixed inset-0 z-[70] bg-ink/50 backdrop-blur-sm"/>
     <motion.div initial={{opacity:0,y:30,scale:.97}} animate={{opacity:1,y:0,scale:1}} exit={{opacity:0,y:20,scale:.98}} className="fixed inset-0 z-[71] grid place-items-center p-4 pointer-events-none">
       <div className="card overflow-hidden w-full max-w-[860px] max-h-[92vh] overflow-y-auto thin pointer-events-auto grid md:grid-cols-2">
-        <div className="relative">
-          <img src={p.img} alt={p.name} className="w-full h-56 md:h-full object-cover"/>
-          <span className="absolute top-3 left-3 text-[11px] font-bold px-2.5 py-1 rounded-full text-white" style={{background:p.accent}}>{p.best?'★ Best-seller':p.premium?'Premium':p.tag}</span>
+        <div className="relative min-h-[220px]">
+          <CardArt accent={p.accent} icon={p.icon} ar={p.ar} className="absolute inset-0 h-full"/>
+          <span className="absolute top-3 left-3 text-[11px] font-bold px-2.5 py-1 rounded-full text-white shadow-sm" style={{background:p.accent}}>{p.best?'★ Best-seller':p.premium?'Premium':p.tag}</span>
         </div>
         <div className="p-6 md:p-7 relative">
           <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 grid place-items-center rounded-full bg-cream text-muted hover:text-ink"><X size={18}/></button>
@@ -331,6 +344,26 @@ function GiftCard({g,onAdd}){
       <div className="flex items-center justify-between mt-auto pt-4">
         <div className="flex items-end gap-2"><div className="serif text-2xl font-extrabold" style={{color:'#B5673A'}}>{g.price} {CUR}</div><div className="text-sm text-muted line-through mb-0.5">{g.oldPrice} {CUR}</div></div>
         <button onClick={()=>onAdd(g)} className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold text-white" style={{background:g.accent}}><Plus size={15}/> Offrir</button>
+      </div>
+    </div>
+  </motion.div>)
+}
+
+function ShopCard({it,onAdd}){
+  return (<motion.div initial={{opacity:0,y:16}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="card overflow-hidden flex flex-col hover:shadow-xl transition">
+    <div className="aspect-[5/3] relative overflow-hidden">
+      <CardArt accent={it.accent} icon={it.icon} ar={it.ar} className="absolute inset-0"/>
+      <span className="absolute top-3 left-3 text-[11px] font-bold px-2.5 py-1 rounded-full text-white shadow-sm" style={{background:it.accent}}>{it.badge}</span>
+      <span className="absolute bottom-3 right-3 text-[11px] font-semibold px-2 py-1 rounded-full bg-white/90 flex items-center gap-1" style={{color:'#7a5a18'}}><Hand size={11}/> Fait main</span>
+    </div>
+    <div className="p-5 flex flex-col gap-1 flex-1">
+      <div className="serif text-lg" style={{color:it.accent}}>{it.ar}</div>
+      <h3 className="serif text-xl font-bold leading-tight">{it.name}</h3>
+      <div className="text-xs text-muted">{it.material}</div>
+      <p className="text-sm text-muted mt-1 line-clamp-2">{it.desc}</p>
+      <div className="flex items-center justify-between mt-auto pt-3">
+        <div className="serif text-xl font-bold">{it.price} <span className="text-xs text-muted">{CUR}</span></div>
+        <button onClick={()=>onAdd(it)} className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold text-white" style={{background:it.accent}}><Plus size={15}/> Ajouter</button>
       </div>
     </div>
   </motion.div>)
