@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect } from 'react'
 import { HashRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import Store from './pages/Store.jsx'
+import AmbientPlayer from './AmbientPlayer.jsx'
 // Routes secondaires chargées à la demande : allège le bundle initial de la boutique
 // (Orders embarque recharts, ~jamais visité par un client).
 const Checkout = lazy(() => import('./pages/Checkout.jsx'))
@@ -27,6 +28,7 @@ function Loading(){
 export default function App(){
   return (<HashRouter>
     <ScrollToTop/>
+    <AmbientPlayer/>
     <Toaster position="top-right" toastOptions={{style:{borderRadius:'12px',fontSize:'14px'}}}/>
     <Suspense fallback={<Loading/>}>
       <Routes>
