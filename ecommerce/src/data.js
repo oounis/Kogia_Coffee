@@ -1,5 +1,5 @@
-import { coffeeBagSVG, labelSVG } from './art.js'
 export const CUR="DT"
+const A=import.meta.env.BASE_URL
 export const DELIVERY={fee:7,freeOver:60}
 export const WHATSAPP="21620000000" // numéro Kogia Coffee (format international sans +)
 // Profils de goût pour le filtre
@@ -44,8 +44,8 @@ export const PRODUCTS=[
   {id:"dunes",name:"Douceur des Dunes",ar:"الحلوة",profile:"Naturellement doux",cat:"doux",tag:"Doux sans sucre",roast:"Torréfaction moyenne",accent:"#C99A5B",icon:"drop",desc:"Douceur sans sucre — orge torréfié, cannelle, poudre de datte & cardamome. Onctueux & doux.",ingredients:["Orge torréfié","Café doux","Cannelle","Poudre de datte","Cardamome"],intensity:2,rating:4.8,reviews:131,prices:{"250g":15,"500g":26,"1kg":45}},
   {id:"sahara",name:"Gingembre du Sahara",ar:"الصحراوية",profile:"Corsé & relevé",cat:"corse",tag:"Coup de gingembre",roast:"Torréfaction foncée",accent:"#A0552A",icon:"flame",desc:"Style yéménite, dominé par le gingembre & foncé. Fort, vif, énergisant.",ingredients:["Café torréfié foncé","Gingembre","Cardamome","Clou de girofle"],intensity:5,rating:4.7,reviews:89,prices:{"250g":16,"500g":28,"1kg":50}},
 ]
-// Images produits = illustrations vectorielles maison (voir art.js) — libres, légères, nettes.
-PRODUCTS.forEach(p=>{p.img=coffeeBagSVG(p);p.label=labelSVG(p)})
+// Images produits = vraies photos de café (libres / CC, voir public/photos/CREDITS.txt).
+PRODUCTS.forEach(p=>{p.img=A+'photos/'+p.id+'.jpg';p.label=A+'labels/'+p.id+'.png'})
 export const productById=id=>PRODUCTS.find(p=>p.id===id)
 // Pack Découverte : 3 mélanges 250g à prix réduit (livraison gratuite incluse)
 export const BUNDLE={

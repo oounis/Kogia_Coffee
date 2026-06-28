@@ -1,80 +1,58 @@
 import { useEffect, useRef, useState } from 'react'
 import { Music, Pause } from 'lucide-react'
 
-// Ambiance sonore générée à la volée (Web Audio API) — aucune licence, aucun fichier.
-// Pad chaud + notes de "boîte à musique" en gamme pentatonique (jamais dissonant), volume doux.
-// Désactivée par défaut : le son ne démarre que sur un clic de l'utilisateur (politique navigateurs).
+// Lecteur d'ambiance : vraie piste lofi (CC0, public/music/ambient.mp3), en boucle, volume doux.
+// Désactivé par défaut (politique d'autoplay des navigateurs) ; démarre au clic, avec fondu.
+const SRC = import.meta.env.BASE_URL + 'music/ambient.mp3'
+const VOL = 0.35
+
 export default function AmbientPlayer() {
   const [on, setOn] = useState(false)
-  const ref = useRef(null)
+  const audioRef = useRef(null)
+  const fadeRef = useRef(null)
 
-  const stop = () => {
-    const r = ref.current
-    if (!r) return
-    clearInterval(r.iv)
-    try { r.master.gain.linearRampToValueAtTime(0, r.ctx.currentTime + 0.5) } catch { /* noop */ }
-    setTimeout(() => { try { r.ctx.close() } catch { /* noop */ } }, 700)
-    ref.current = null
+  useEffect(() => {
+    const a = new Audio(SRC)
+    a.loop = true
+    a.preload = 'none'
+    a.volume = 0
+    audioRef.current = a
+    return () => { clearInterval(fadeRef.current); a.pause(); audioRef.current = null }
+  }, [])
+
+  const fadeTo = (target, done) => {
+    clearInterval(fadeRef.current)
+    const a = audioRef.current
+    fadeRef.current = setInterval(() => {
+      if (!a) return clearInterval(fadeRef.current)
+      const step = target > a.volume ? 0.04 : -0.06
+      let v = a.volume + step
+      if ((step > 0 && v >= target) || (step < 0 && v <= target)) { v = target; clearInterval(fadeRef.current); if (done) done() }
+      a.volume = Math.max(0, Math.min(1, v))
+    }, 60)
   }
 
-  const start = () => {
-    const Ctx = window.AudioContext || window.webkitAudioContext
-    if (!Ctx) return
-    const ctx = new Ctx()
-    const master = ctx.createGain()
-    master.gain.value = 0
-    master.connect(ctx.destination)
-    master.gain.linearRampToValueAtTime(0.18, ctx.currentTime + 2)
-
-    const lp = ctx.createBiquadFilter()
-    lp.type = 'lowpass'; lp.frequency.value = 1300; lp.connect(master)
-
-    // Écho/réverbération simple
-    const delay = ctx.createDelay(); delay.delayTime.value = 0.38
-    const fb = ctx.createGain(); fb.gain.value = 0.33
-    delay.connect(fb); fb.connect(delay); delay.connect(lp)
-
-    // Nappe grave (drone) racine + quinte
-    const drone = [65.41, 98.0].map(f => {
-      const o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.value = f
-      const g = ctx.createGain(); g.gain.value = 0.07
-      o.connect(g); g.connect(lp); o.start()
-      return o
-    })
-
-    // LFO lent sur la fréquence du filtre → mouvement organique
-    const lfo = ctx.createOscillator(); lfo.frequency.value = 0.05
-    const lfoG = ctx.createGain(); lfoG.gain.value = 480
-    lfo.connect(lfoG); lfoG.connect(lp.frequency); lfo.start()
-
-    // Notes en Do majeur pentatonique
-    const scale = [261.63, 293.66, 329.63, 392.0, 440.0, 523.25, 587.33, 659.25, 783.99]
-    const tick = () => {
-      const f = scale[Math.floor(Math.random() * scale.length)]
-      const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = f
-      const g = ctx.createGain(); g.gain.value = 0
-      o.connect(g); g.connect(delay); g.connect(lp)
-      const t = ctx.currentTime
-      g.gain.linearRampToValueAtTime(0.2, t + 0.03)
-      g.gain.exponentialRampToValueAtTime(0.001, t + 2.2)
-      o.start(t); o.stop(t + 2.4)
+  const toggle = async () => {
+    const a = audioRef.current
+    if (!a) return
+    if (on) {
+      fadeTo(0, () => a.pause())
+      setOn(false)
+    } else {
+      try {
+        a.volume = 0
+        await a.play()
+        fadeTo(VOL)
+        setOn(true)
+      } catch { /* lecture bloquée — ignorer */ }
     }
-    tick()
-    const iv = setInterval(tick, 1700)
-    ref.current = { ctx, drone, lfo, iv, master }
   }
-
-  const toggle = () => {
-    if (on) { stop(); setOn(false) } else { start(); setOn(true) }
-  }
-
-  useEffect(() => () => stop(), [])
 
   return (
     <button
       onClick={toggle}
       aria-label={on ? 'Couper la musique d’ambiance' : 'Activer la musique d’ambiance'}
-      title={on ? 'Couper l’ambiance' : 'Ambiance sonore'}
+      title={on ? 'Couper l’ambiance' : 'Ambiance lofi'}
       className="fixed bottom-4 left-4 z-[60] w-12 h-12 rounded-full grid place-items-center text-white shadow-lg transition hover:scale-105"
       style={{ background: on ? '#2A211B' : '#B5673A' }}
     >

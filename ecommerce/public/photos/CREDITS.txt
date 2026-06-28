@@ -1,0 +1,26 @@
+KOGIA COFFEE — Crédits médias (images & musique)
+=================================================
+Toutes les ressources sont libres d'utilisation commerciale.
+Les images sous licence CC BY / CC BY-SA sont créditées ci-dessous (auteur + licence + source).
+
+PHOTOS PRODUITS
+---------------
+djerbi.jpg     — « Bakır cezve » par Maderibeyza — CC BY-SA 3.0
+                 https://commons.wikimedia.org/wiki/File:Bak%C4%B1r_cezve.JPG
+ethiopien.jpg  — Grains de café torréfiés — CC0 / Domaine public (via Openverse)
+khaleeji.jpg   — « A dallah of Arabic coffee » par Abdulla Al Muhairi — CC BY 2.0
+                 https://commons.wikimedia.org/wiki/File:A_dallah_of_Arabic_coffee.jpg
+marrakech.jpg  — « Coffee powdered » par Kulmalukko — CC BY-SA 3.0
+                 https://commons.wikimedia.org/wiki/File:Coffee_powdered.jpg
+dunes.jpg      — « Coppa Cafe Latte art, Brisbane » par Kgbo — CC BY-SA 4.0
+                 https://commons.wikimedia.org/wiki/File:Coppa_Cafe_Latte_art,_Brisbane,_Queensland.jpg
+sahara.jpg     — Grains de café torréfiés foncés — CC0 / Domaine public (via Openverse)
+
+MUSIQUE
+-------
+music/ambient.mp3 — « Lofi Jazz Organ Loop 95 BPM » — CC0 (domaine public, via Freesound/Openverse)
+                    Aucune attribution requise.
+
+Licences : CC BY 2.0 https://creativecommons.org/licenses/by/2.0/ · CC BY-SA 3.0
+https://creativecommons.org/licenses/by-sa/3.0/ · CC BY-SA 4.0
+https://creativecommons.org/licenses/by-sa/4.0/ · CC0 https://creativecommons.org/publicdomain/zero/1.0/
