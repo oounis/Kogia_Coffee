@@ -1,5 +1,5 @@
+import { packshot } from './packshot.js'
 export const CUR="DT"
-const A=import.meta.env.BASE_URL
 export const DELIVERY={fee:7,freeOver:60}
 export const WHATSAPP="21620000000" // numéro Kogia Coffee (format international sans +)
 
@@ -61,8 +61,8 @@ export const PRODUCTS=[
   {id:"skinjbir",name:"Skinjbir",amazigh:"Skinjbir · ⵙⴽⵏⵊⴱⵉⵔ",ar:"سكنجبير",meaning:"« le gingembre »",profile:"Épicé & digestif",cat:"digestif",family:"Digestif & bien-être",tag:"Après le repas",roast:"Moyenne",caf:"Moyen",accent:"#C77D3A",icon:"sprout",desc:"Le digestif amazigh : gingembre généreux, écorce de citron et cannelle. À savourer après le repas pour faciliter la digestion.",pairing:"Gingembre + citron : on commence par une pincée, le gingembre domine vite.",health:"Gingembre : digestion, immunité, anti-nausée — l'allié d'après-repas.",ingredients:["Arabica","Gingembre","Écorce de citron","Cannelle"],intensity:3,rating:4.7,reviews:103,prices:{"250g":17,"500g":29,"1kg":52}},
   {id:"lhend",name:"Café du Soir",amazigh:"Iḍ · ⵉⴹ",ar:"قهوة المساء",meaning:"« la nuit »",profile:"Léger & sans nervosité",cat:"leger",family:"Digestif & bien-être",tag:"Faible caféine · le soir",roast:"Orge & caroube",caf:"Très doux",accent:"#7A5C3A",icon:"droplet",desc:"Le café du soir amazigh : orge torréfié et caroube, à peine de café. La chaleur d'une tasse sans la nervosité — pour les veillées (iḍ) en famille.",pairing:"Orge + caroube remplacent l'essentiel du café : chaleur sans caféine.",health:"Très faible caféine : la chaleur du soir sans troubler le sommeil.",ingredients:["Orge torréfié","Caroube","Cannelle","Très peu de café"],intensity:1,rating:4.7,reviews:41,prices:{"250g":17,"500g":29,"1kg":52}},
 ]
-// Vraies photos de café (graduées de façon homogène) — voir public/photos/CREDITS.txt
-PRODUCTS.forEach(p=>{p.img=A+'photos/'+p.id+'.jpg'})
+// Packshots maison dessinés en SVG (aucun visuel externe) — voir src/packshot.js
+PRODUCTS.forEach(p=>{p.img=packshot(p)})
 export const productById=id=>PRODUCTS.find(p=>p.id===id)
 
 // ───────────────────── TASSES & MUGS (faits main) ─────────────────────
