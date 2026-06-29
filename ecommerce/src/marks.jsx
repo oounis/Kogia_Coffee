@@ -26,6 +26,7 @@ export function BlendMark({ p, size=96 }){
 function shade(hex,p){ const n=parseInt(hex.slice(1),16); let r=(n>>16)+p,g=((n>>8)&255)+p,b=(n&255)+p
   r=Math.max(0,Math.min(255,r));g=Math.max(0,Math.min(255,g));b=Math.max(0,Math.min(255,b)); return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1) }
 export function ProductImg({ p, size=96, radius=20 }){
+  if(p?.img) return <img src={p.img} alt={p?.name||''} loading="lazy" className="object-cover shrink-0" style={{width:size,height:size,borderRadius:radius}}/>
   return <Atmosphere accent={p?.accent||'#B5673A'} icon={p?.icon||'coffee'} size={size} radius={radius}/>
 }
 // Étoiles de notation (statique, partielle selon la note)

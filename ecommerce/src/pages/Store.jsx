@@ -46,9 +46,9 @@ export default function Store(){
 
     <section className="mx-auto w-[92vw] max-w-[1120px] grid md:grid-cols-2 gap-10 items-center pt-14 pb-12">
       <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{duration:.5}}>
-        <div className="inline-flex items-center gap-2 text-xs font-bold px-3 py-1 rounded-full" style={{background:'#F6EAE0',color:'#B5673A'}}>☕ Torréfié & moulu frais · Tunisie 🇹🇳</div>
-        <h1 className="serif text-5xl md:text-6xl font-extrabold leading-[1.05] mt-4">Le café tunisien,<br/>livré chez <span style={{color:'#B5673A'}}>vous</span>.</h1>
-        <p className="text-lg text-muted mt-4 max-w-[44ch]">Six mélanges traditionnels, en poudre, par sachet. <b className="text-ink">Paiement à la livraison</b> · livraison gratuite dès {DELIVERY.freeOver} {CUR}.</p>
+        <div className="inline-flex items-center gap-2 text-xs font-bold px-3 py-1 rounded-full" style={{background:'#F6EAE0',color:'#B5673A'}}>ⵣ Café amazigh · de Djerba à Carthage 🇹🇳</div>
+        <h1 className="serif text-5xl md:text-6xl font-extrabold leading-[1.05] mt-4">Le café <span style={{color:'#B5673A'}}>amazigh</span>,<br/>de Djerba à Carthage.</h1>
+        <p className="text-lg text-muted mt-4 max-w-[46ch]">Onze recettes 100% locales, en poudre, par sachet — des épices choisies pour le goût <b className="text-ink">et</b> le bien-être. <b className="text-ink">Paiement à la livraison</b> · gratuite dès {DELIVERY.freeOver} {CUR}.</p>
         <div className="flex items-center gap-4 mt-5 text-sm"><span className="flex items-center gap-1.5"><Stars value={4.8} size={16}/> <b>4,8</b><span className="text-muted">/5 · 800+ avis</span></span><span className="text-muted flex items-center gap-1.5"><Coffee size={15} style={{color:'#B5673A'}}/> Torréfié à Djerba</span></div>
         <div className="flex gap-3 mt-7 flex-wrap"><a href="#produits" className="inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold text-white shadow-lg shadow-caramel/20 hover:-translate-y-0.5 transition" style={{background:'#B5673A'}}>Voir nos cafés <ArrowRight size={17}/></a><a href="#abonnement" className="inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold bg-white border border-line hover:border-caramel transition"><Repeat size={16}/> S'abonner −10%</a></div>
       </motion.div>
@@ -63,7 +63,7 @@ export default function Store(){
 
     {/* Café du mois */}
     <section className="mx-auto w-[92vw] max-w-[1120px] pb-4">
-      <motion.div initial={{opacity:0,y:18}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="card overflow-hidden grid sm:grid-cols-[auto_1fr_auto] items-center gap-5 p-5 sm:p-6" style={{background:'linear-gradient(135deg,#fff,#F6EAE0)'}}>
+      <motion.div initial={{opacity:0,y:18}} animate={{opacity:1,y:0}} className="card overflow-hidden grid sm:grid-cols-[auto_1fr_auto] items-center gap-5 p-5 sm:p-6" style={{background:'linear-gradient(135deg,#fff,#F6EAE0)'}}>
         <div className="relative shrink-0 mx-auto sm:mx-0"><ProductImg p={featured} size={92} radius={18}/><span className="absolute -top-2 -left-2 w-8 h-8 rounded-full grid place-items-center text-white shadow" style={{background:'#B5673A'}}><Crown size={16}/></span></div>
         <div className="text-center sm:text-left">
           <div className="text-[11px] font-bold uppercase tracking-widest" style={{color:'#B5673A'}}>Café du mois · {FEATURED.month}</div>
@@ -151,7 +151,7 @@ export default function Store(){
         <div className="flex items-center justify-center gap-2 mt-3 text-sm"><Stars value={4.8} size={18}/><b>4,8</b><span className="text-muted">/5 sur 800+ commandes livrées</span></div>
       </div>
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">{REVIEWS.map((r,i)=>(
-        <motion.div key={i} initial={{opacity:0,y:16}} whileInView={{opacity:1,y:0}} viewport={{once:true}} transition={{delay:i*.05}} className="card p-5 flex flex-col">
+        <motion.div key={i} initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} transition={{delay:i*.05}} className="card p-5 flex flex-col">
           <Quote size={22} style={{color:'#E0C3AC'}}/>
           <p className="text-sm mt-2 flex-1">« {r.quote} »</p>
           <div className="flex items-center justify-between mt-4 pt-3 border-t border-line">
@@ -252,16 +252,17 @@ function Chip({active,onClick,children}){
 
 function ProductCard({p,onAdd,onOpen}){
   const [size,setSize]=useState('250g')
-  return (<motion.div initial={{opacity:0,y:16}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="card overflow-hidden flex flex-col hover:shadow-xl transition">
+  return (<motion.div initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} className="card overflow-hidden flex flex-col hover:shadow-xl transition">
     <button onClick={onOpen} className="aspect-[5/3] relative overflow-hidden text-left group">
-      <CardArt accent={p.accent} icon={p.icon} ar={p.ar} className="absolute inset-0 group-hover:scale-[1.04] transition duration-500"/>
+      <img src={p.img} alt={p.name} loading="lazy" className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.04] transition duration-500"/>
       <span className="absolute top-3 left-3 text-[11px] font-bold px-2.5 py-1 rounded-full text-white shadow-sm" style={{background:p.accent}}>{p.best?'★ Best-seller':p.premium?'Premium':p.tag}</span>
       <span className="absolute bottom-3 right-3 text-[11px] font-semibold px-2 py-1 rounded-full bg-white/90 backdrop-blur flex items-center gap-1" style={{color:'#7a5a18'}}><Star size={11} fill="#E8A93B" stroke="#E8A93B"/> {p.rating.toFixed(1)}</span>
     </button>
     <div className="p-5 flex flex-col gap-1 flex-1">
-      <div className="serif text-lg" style={{color:p.accent}}>{p.ar}</div>
+      <div className="text-[12px] font-bold tracking-wide" style={{color:p.accent}}>{p.amazigh}</div>
       <button onClick={onOpen} className="text-left"><h3 className="serif text-xl font-bold leading-tight hover:underline">{p.name}</h3></button>
-      <div className="text-sm text-muted">{p.profile} · {p.roast}</div>
+      <div className="text-sm text-muted">{p.profile} · ☕ {p.caf}</div>
+      {p.health&&<div className="text-[11px] font-semibold inline-flex items-start gap-1 mt-0.5" style={{color:'#6F8C3A'}}><Leaf size={12} className="mt-0.5 shrink-0"/> {p.health}</div>}
       <div className="flex items-center gap-2 mt-0.5"><Stars value={p.rating} size={13}/><span className="text-xs text-muted">{p.rating.toFixed(1)} · {p.reviews} avis</span></div>
       <p className="text-xs text-muted mt-1 line-clamp-2">{p.desc}</p>
       <div className="flex gap-1.5 mt-3">{SIZES.map(s=><button key={s} onClick={()=>setSize(s)} className={`flex-1 rounded-lg py-1.5 text-xs font-semibold border ${size===s?'text-white':'text-muted border-line'}`} style={size===s?{background:'#2A211B',borderColor:'#2A211B'}:{}}>{s}</button>)}</div>
@@ -279,19 +280,24 @@ function ProductDetail({p,onClose,onAdd}){
     <motion.div initial={{opacity:0,y:30,scale:.97}} animate={{opacity:1,y:0,scale:1}} exit={{opacity:0,y:20,scale:.98}} className="fixed inset-0 z-[71] grid place-items-center p-4 pointer-events-none">
       <div className="card overflow-hidden w-full max-w-[860px] max-h-[92vh] overflow-y-auto thin pointer-events-auto grid md:grid-cols-2">
         <div className="relative min-h-[220px]">
-          <CardArt accent={p.accent} icon={p.icon} ar={p.ar} className="absolute inset-0 h-full"/>
+          <img src={p.img} alt={p.name} className="absolute inset-0 w-full h-full object-cover"/>
           <span className="absolute top-3 left-3 text-[11px] font-bold px-2.5 py-1 rounded-full text-white shadow-sm" style={{background:p.accent}}>{p.best?'★ Best-seller':p.premium?'Premium':p.tag}</span>
         </div>
         <div className="p-6 md:p-7 relative">
           <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 grid place-items-center rounded-full bg-cream text-muted hover:text-ink"><X size={18}/></button>
-          <div className="serif text-lg" style={{color:p.accent}}>{p.ar}</div>
+          <div className="text-sm font-bold tracking-wide" style={{color:p.accent}}>{p.amazigh}</div>
           <h2 className="serif text-3xl font-extrabold leading-tight">{p.name}</h2>
+          <div className="text-sm text-muted italic mt-0.5">{p.meaning} · {p.ar}</div>
           <div className="flex items-center gap-2 mt-1.5"><Stars value={p.rating} size={15}/><span className="text-sm"><b>{p.rating.toFixed(1)}</b> <span className="text-muted">· {p.reviews} avis</span></span></div>
           <p className="text-sm text-muted mt-3">{p.desc}</p>
+
+          {p.health&&<div className="mt-3 rounded-xl p-3 text-sm flex items-start gap-2" style={{background:'#EEF3E6',color:'#4f6b2a'}}><Leaf size={16} className="mt-0.5 shrink-0"/><div><b>Bienfait —</b> {p.health}</div></div>}
+          {p.pairing&&<div className="mt-2 rounded-xl p-3 text-sm flex items-start gap-2" style={{background:'#F6EAE0',color:'#8C5A33'}}><Sparkles size={16} className="mt-0.5 shrink-0"/><div><b>L'accord —</b> {p.pairing}</div></div>}
 
           <div className="flex flex-wrap gap-x-6 gap-y-2 mt-4 text-sm">
             <div><div className="text-[11px] uppercase tracking-wide text-muted font-semibold">Profil</div><div className="font-semibold">{p.profile}</div></div>
             <div><div className="text-[11px] uppercase tracking-wide text-muted font-semibold">Torréfaction</div><div className="font-semibold">{p.roast}</div></div>
+            <div><div className="text-[11px] uppercase tracking-wide text-muted font-semibold">Caféine</div><div className="font-semibold">☕ {p.caf}</div></div>
             <div><div className="text-[11px] uppercase tracking-wide text-muted font-semibold">Intensité</div><Intensity value={p.intensity}/></div>
           </div>
 
@@ -318,7 +324,7 @@ function SubscriptionBuilder({onSub}){
   const [pid,setPid]=useState(PRODUCTS[0].id); const [freq,setFreq]=useState(SUBSCRIPTION.freqs[1].id)
   const p=productById(pid); const f=SUBSCRIPTION.freqs.find(x=>x.id===freq)
   const full=p.prices[SUBSCRIPTION.size]; const price=Math.round(full*(1-SUBSCRIPTION.discount))
-  return (<motion.div initial={{opacity:0,y:16}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="card p-6">
+  return (<motion.div initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} className="card p-6">
     <div className="flex items-center gap-3"><ProductImg p={p} size={56} radius={14}/><div><div className="serif text-lg font-bold">{p.name}</div><div className="text-xs text-muted">{p.profile} · {SUBSCRIPTION.size}</div></div></div>
     <div className="mt-4"><div className="text-[11px] uppercase tracking-wide text-muted font-semibold mb-1.5">Mélange</div>
       <select value={pid} onChange={e=>setPid(e.target.value)} className="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-sm">{PRODUCTS.map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select></div>
@@ -330,7 +336,7 @@ function SubscriptionBuilder({onSub}){
 }
 
 function GiftCard({g,onAdd}){
-  return (<motion.div initial={{opacity:0,y:16}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="card overflow-hidden flex flex-col">
+  return (<motion.div initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} className="card overflow-hidden flex flex-col">
     <div className="relative p-6 flex items-center justify-center gap-2" style={{background:'linear-gradient(135deg,#2A211B,#4a362a)'}}>
       <span className="absolute top-3 left-3 text-[11px] font-bold px-2.5 py-1 rounded-full text-white" style={{background:g.accent}}>{g.badge}</span>
       <span className="absolute top-3 right-3 text-white/80"><Gift size={20}/></span>
@@ -350,7 +356,7 @@ function GiftCard({g,onAdd}){
 }
 
 function ShopCard({it,onAdd}){
-  return (<motion.div initial={{opacity:0,y:16}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="card overflow-hidden flex flex-col hover:shadow-xl transition">
+  return (<motion.div initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} className="card overflow-hidden flex flex-col hover:shadow-xl transition">
     <div className="aspect-[5/3] relative overflow-hidden">
       <CardArt accent={it.accent} icon={it.icon} ar={it.ar} className="absolute inset-0"/>
       <span className="absolute top-3 left-3 text-[11px] font-bold px-2.5 py-1 rounded-full text-white shadow-sm" style={{background:it.accent}}>{it.badge}</span>
