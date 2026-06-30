@@ -1,5 +1,5 @@
-import { packshot, mugshot, setshot } from './packshot.js'
 export const CUR="DT"
+const A=import.meta.env.BASE_URL
 export const DELIVERY={fee:7,freeOver:60}
 export const WHATSAPP="21620000000" // numéro Kogia Coffee (format international sans +)
 
@@ -62,7 +62,7 @@ export const PRODUCTS=[
   {id:"lhend",name:"Café du Soir",amazigh:"Iḍ · ⵉⴹ",ar:"قهوة المساء",meaning:"« la nuit »",profile:"Léger & sans nervosité",cat:"leger",family:"Digestif & bien-être",tag:"Faible caféine · le soir",roast:"Orge & caroube",caf:"Très doux",accent:"#7A5C3A",icon:"droplet",desc:"Le café du soir amazigh : orge torréfié et caroube, à peine de café. La chaleur d'une tasse sans la nervosité — pour les veillées (iḍ) en famille.",pairing:"Orge + caroube remplacent l'essentiel du café : chaleur sans caféine.",health:"Très faible caféine : la chaleur du soir sans troubler le sommeil.",ingredients:["Orge torréfié","Caroube","Cannelle","Très peu de café"],intensity:1,rating:4.7,reviews:41,prices:{"250g":17,"500g":29,"1kg":52}},
 ]
 // Packshots maison dessinés en SVG (aucun visuel externe) — voir src/packshot.js
-PRODUCTS.forEach(p=>{p.img=packshot(p)})
+PRODUCTS.forEach(p=>{p.img=A+'packs/'+p.id+'.png'})
 export const productById=id=>PRODUCTS.find(p=>p.id===id)
 
 // ───────────────────── TASSES & MUGS (faits main) ─────────────────────
@@ -72,7 +72,7 @@ export const MUGS=[
   {id:"mug-emaille",kind:"mug",name:"Mug Émaillé Artisanal",ar:"كوب مزخرف",accent:"#B5673A",icon:"cup",price:38,badge:"Pièce unique",material:"Grès émaillé",desc:"Mug en grès tourné et émaillé à la main — chaque pièce est unique, avec ses nuances et son grain."},
   {id:"mug-duo",kind:"mug",name:"Duo Mugs Kogia",ar:"ثنائي الأكواب",accent:"#6F8C3A",icon:"cup",price:60,badge:"Coffret duo",material:"Céramique émaillée",desc:"Deux mugs assortis dans un joli coffret — l'idée cadeau pour les amoureux du café."},
 ]
-MUGS.forEach(m=>{m.img=mugshot(m)})
+MUGS.forEach(m=>{m.img=A+'packs/'+m.id+'.png'})
 export const mugById=id=>MUGS.find(m=>m.id===id)
 
 // ─────────────── ACCESSOIRES ARTISANAUX (faits main) ───────────────
@@ -84,7 +84,7 @@ export const ACCESSORIES=[
   {id:"cezve",kind:"accessory",name:"Zazwa en Cuivre",ar:"زازوة نحاس",accent:"#9C6B3A",icon:"coffee",price:42,badge:"Cuivre",material:"Cuivre",desc:"La cafetière à café turc (zazwa / cezve) en cuivre, manche en bois. Pour le café à la sable, à l'ancienne."},
   {id:"coffret-kogia",kind:"accessory",name:"Coffret Découverte Kogia",ar:"علبة كوجيا",accent:"#3E6B7C",icon:"gift",price:89,badge:"Mug + café + finjan",material:"Coffret cadeau",desc:"Le cadeau parfait : un mug Baleine, 250g de notre signature Âme de Djerba et deux finjans, dans un écrin Kogia."},
 ]
-ACCESSORIES.forEach(a=>{a.img=setshot(a)})
+ACCESSORIES.forEach(a=>{a.img=A+'packs/'+a.id+'.png'})
 export const accessoryById=id=>ACCESSORIES.find(a=>a.id===id)
 
 // Recherche tous types (pour le panier / commandes)
