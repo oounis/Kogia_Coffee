@@ -31,7 +31,7 @@ export default function Checkout(){
     <h1 className="serif text-3xl font-extrabold mb-6">Finaliser la commande</h1>
     <div className="grid md:grid-cols-[1.3fr_.7fr] gap-6">
       <div className="card p-6">
-        <div className="inline-flex items-center gap-2 text-xs font-bold px-3 py-1 rounded-full mb-4" style={{background:'#F6EAE0',color:'#B5673A'}}><Wallet size={13}/> Paiement à la livraison — aucun paiement en ligne</div>
+        <div className="inline-flex items-center gap-2 text-xs font-bold px-3 py-1 rounded-full mb-4" style={{background:'#F6EAE0',color:'#E8962B'}}><Wallet size={13}/> Paiement à la livraison — aucun paiement en ligne</div>
         <div className="grid sm:grid-cols-2 gap-3">
           <L label="Nom complet *"><I value={f.name} onChange={e=>setF({...f,name:e.target.value})} placeholder="Ex : Mohamed Ben Ali"/></L>
           <L label="Téléphone *"><I value={f.phone} onChange={e=>setF({...f,phone:e.target.value})} placeholder="+216 20 000 000"/></L>
@@ -40,12 +40,12 @@ export default function Checkout(){
           <div className="sm:col-span-2"><L label="Adresse complète *"><I value={f.address} onChange={e=>setF({...f,address:e.target.value})} placeholder="Rue, immeuble, code postal…"/></L></div>
           <div className="sm:col-span-2"><L label="Notes (optionnel)"><textarea value={f.notes} onChange={e=>setF({...f,notes:e.target.value})} className="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-sm h-20" placeholder="Instructions de livraison…"/></L></div>
         </div>
-        <button onClick={submit} className="w-full rounded-full py-3.5 mt-5 font-semibold text-white" style={{background:'#B5673A'}}>Confirmer · {total} {CUR} à la livraison</button>
+        <button onClick={submit} className="w-full rounded-full py-3.5 mt-5 font-semibold text-white" style={{background:'#E8962B'}}>Confirmer · {total} {CUR} à la livraison</button>
         <div className="flex items-center justify-center gap-4 mt-3 text-[11px] text-muted"><span className="flex items-center gap-1"><ShieldCheck size={12}/> Sans paiement en ligne</span><span className="flex items-center gap-1"><Truck size={12}/> 24 gouvernorats</span></div>
       </div>
       <div className="card p-6 h-fit">
         <h3 className="serif text-lg font-bold mb-3">Votre commande</h3>
-        <div className="space-y-3">{cart.map(i=>(<div key={i.key} className="flex items-center gap-2 text-sm"><ProductImg p={i} size={36} radius={10}/><span className="flex-1 text-muted">{i.name} <b className="text-ink">×{i.qty}</b> <span className="text-xs">({i.size})</span>{i.sub&&<span className="text-[11px] block" style={{color:'#B5673A'}}>↻ {i.freqLabel}</span>}</span><span className="font-semibold">{i.price*i.qty} {CUR}</span></div>))}</div>
+        <div className="space-y-3">{cart.map(i=>(<div key={i.key} className="flex items-center gap-2 text-sm"><ProductImg p={i} size={36} radius={10}/><span className="flex-1 text-muted">{i.name} <b className="text-ink">×{i.qty}</b> <span className="text-xs">({i.size})</span>{i.sub&&<span className="text-[11px] block" style={{color:'#E8962B'}}>↻ {i.freqLabel}</span>}</span><span className="font-semibold">{i.price*i.qty} {CUR}</span></div>))}</div>
 
         {/* Code promo */}
         <div className="mt-4">
@@ -58,7 +58,7 @@ export default function Checkout(){
           <div className="flex justify-between text-muted"><span>Sous-total</span><span>{sub} {CUR}</span></div>
           {discount>0&&<div className="flex justify-between" style={{color:'#10B981'}}><span>Remise ({promo.code})</span><span>−{discount} {CUR}</span></div>}
           <div className="flex justify-between text-muted"><span>Livraison</span><span>{fee===0?'Gratuite ✓':fee+' '+CUR}</span></div>
-          <div className="flex justify-between pt-1"><span className="font-semibold">Total</span><b className="serif text-xl" style={{color:'#B5673A'}}>{total} {CUR}</b></div>
+          <div className="flex justify-between pt-1"><span className="font-semibold">Total</span><b className="serif text-xl" style={{color:'#E8962B'}}>{total} {CUR}</b></div>
         </div>
         {hasSub&&<div className="text-xs mt-3 flex items-start gap-1.5 rounded-lg p-2" style={{background:'#F6EAE0',color:'#8C5A33'}}><Repeat size={13} className="mt-0.5 shrink-0"/> Cette commande contient un <b>abonnement</b> : renouvellement automatique, sans engagement, payé à chaque livraison.</div>}
         <div className="text-xs text-muted mt-3 flex items-center gap-1.5 bg-cream rounded-lg p-2"><CalendarCheck size={13}/> Livraison estimée : <b className="text-ink">{etaDate()}</b></div>
@@ -69,4 +69,4 @@ export default function Checkout(){
 const L=({label,children})=><label className="block"><span className="text-xs font-semibold text-muted">{label}</span><div className="mt-1">{children}</div></label>
 const I=p=><input {...p} className="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-sm"/>
 const S=p=><select {...p} className="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-sm">{p.children}</select>
-const Empty=({nav})=><div className="min-h-screen grid place-items-center"><div className="text-center"><div className="text-5xl mb-3">🛒</div><p className="text-muted mb-4">Votre panier est vide.</p><button onClick={()=>nav('/')} className="rounded-full px-6 py-3 font-semibold text-white" style={{background:'#B5673A'}}>Retour à la boutique</button></div></div>
+const Empty=({nav})=><div className="min-h-screen grid place-items-center"><div className="text-center"><div className="text-5xl mb-3">🛒</div><p className="text-muted mb-4">Votre panier est vide.</p><button onClick={()=>nav('/')} className="rounded-full px-6 py-3 font-semibold text-white" style={{background:'#E8962B'}}>Retour à la boutique</button></div></div>

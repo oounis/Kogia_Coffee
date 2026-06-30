@@ -1,13 +1,14 @@
 @import "tailwindcss";
 @theme{
-  --color-ink:#2A211B; --color-muted:#8B7B6E; --color-line:#EEE6DE; --color-cream:#FBF8F4; --color-foam:#FFFFFF;
-  --color-caramel:#B5673A; --color-caramel-dark:#9C5630; --color-soft:#F6EAE0;
-  --font-sans:"Inter Variable",system-ui,sans-serif; --font-serif:"Playfair Display",Georgia,serif;
+  --color-ink:#13183A; --color-muted:#6B7088; --color-line:#ECE7DD; --color-cream:#FFFCF7; --color-foam:#FFFFFF;
+  --color-caramel:#E8962B; --color-caramel-dark:#D07E1A; --color-soft:#FFF3DC;
+  --font-sans:"Inter","Inter Variable",system-ui,sans-serif; --font-serif:"Lilita One","Inter",system-ui,sans-serif;
 }
 html{scroll-behavior:smooth}
 section[id],div[id]{scroll-margin-top:72px}
-body{font-family:var(--font-sans);color:var(--color-ink);background:#ffffff;-webkit-font-smoothing:antialiased}
-.serif{font-family:var(--font-serif)}
+body{font-family:var(--font-sans);color:var(--color-ink);background:var(--color-cream);-webkit-font-smoothing:antialiased}
+.serif{font-family:var(--font-serif);font-weight:400;letter-spacing:.2px}
+.tifi{font-family:"Noto Sans Tifinagh",var(--font-sans)}
 .card{background:#fff;border:1px solid var(--color-line);border-radius:1.25rem}
 /* fond blanc avec de très légers voiles colorés (chaud + froid) — la couleur vient des produits */
 .bg-ambient{background-image:radial-gradient(900px 520px at 90% -10%,rgba(181,103,58,.06),transparent 60%),radial-gradient(760px 520px at -8% 4%,rgba(62,107,124,.05),transparent 55%),radial-gradient(680px 480px at 50% 120%,rgba(217,164,65,.05),transparent 60%)}
