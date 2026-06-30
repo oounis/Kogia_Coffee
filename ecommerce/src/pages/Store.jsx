@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ShoppingBag, Plus, Minus, X, Coffee, Truck, Leaf, ArrowRight, Wallet, ShieldCheck, Search, Sparkles, Star, Repeat, Gift, Quote, Mail, Crown, Check, CupSoda, Hand } from 'lucide-react'
 import { PRODUCTS, MUGS, ACCESSORIES, SIZES, CUR, DELIVERY, PROFILS, BUNDLE, GIFTS, SUBSCRIPTION, FEATURED, REVIEWS, productById } from '../data.js'
 import { KogiaMark, ProductImg, Stars, Intensity } from '../marks.jsx'
-import { CardArt } from '../atmo.jsx'
 import { loadCart, saveCart, addNewsletter } from '../store.js'
 import toast from 'react-hot-toast'
 
@@ -14,6 +13,18 @@ export default function Store(){
   const [detail,setDetail]=useState(null) // produit ouvert en détail
   const [query,setQuery]=useState(''); const [filter,setFilter]=useState('all')
   useEffect(()=>saveCart(cart),[cart])
+  // Liens d'ancrage internes : avec HashRouter, #section casse la route → on intercepte et on défile.
+  useEffect(()=>{
+    const onClick=e=>{
+      const a=e.target.closest('a[href^="#"]'); if(!a) return
+      const href=a.getAttribute('href')
+      if(href.startsWith('#/')||href==='#') return // routes (#/suivi, #/admin) ou haut de page
+      const el=document.getElementById(href.slice(1))
+      if(el){ e.preventDefault(); el.scrollIntoView({behavior:'smooth',block:'start'}) }
+    }
+    document.addEventListener('click',onClick)
+    return ()=>document.removeEventListener('click',onClick)
+  },[])
   const note=m=>{setToastMsg(m);clearTimeout(window.__t);window.__t=setTimeout(()=>setToastMsg(''),1800)}
   const add=(p,size,qty=1)=>{const key=`${p.id}_${size}`;setCart(c=>{const e=c.find(i=>i.key===key);return e?c.map(i=>i.key===key?{...i,qty:i.qty+qty}:i):[...c,{key,id:p.id,size,name:p.name,price:p.prices[size],qty,accent:p.accent,icon:p.icon}]});note(`${p.name} (${size}) ajouté ✓`)}
   const addBundle=()=>{const key='bundle_'+BUNDLE.id;setCart(c=>{const e=c.find(i=>i.key===key);return e?c.map(i=>i.key===key?{...i,qty:i.qty+1}:i):[...c,{key,id:BUNDLE.id,bundle:true,size:'Pack',name:BUNDLE.name,price:BUNDLE.price,qty:1,accent:BUNDLE.accent||'#B5673A',icon:'sparkles'}]});note('Pack Découverte ajouté ✓')}
@@ -358,7 +369,7 @@ function GiftCard({g,onAdd}){
 function ShopCard({it,onAdd}){
   return (<motion.div initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} className="card overflow-hidden flex flex-col hover:shadow-xl transition">
     <div className="aspect-[5/3] relative overflow-hidden">
-      <CardArt accent={it.accent} icon={it.icon} ar={it.ar} className="absolute inset-0"/>
+      <img src={it.img} alt={it.name} loading="lazy" className="absolute inset-0 w-full h-full object-cover"/>
       <span className="absolute top-3 left-3 text-[11px] font-bold px-2.5 py-1 rounded-full text-white shadow-sm" style={{background:it.accent}}>{it.badge}</span>
       <span className="absolute bottom-3 right-3 text-[11px] font-semibold px-2 py-1 rounded-full bg-white/90 flex items-center gap-1" style={{color:'#7a5a18'}}><Hand size={11}/> Fait main</span>
     </div>
